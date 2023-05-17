@@ -71,10 +71,17 @@ def update_graph():
             # 横軸の範囲を制限する
             xmin = max(timestamp - start_time - 0.1, 0)  # 左端を0.1秒前に制限
             xmax = timestamp - start_time
-            print(xmin, xmax)
             ax1.set_xlim(xmin, xmax)
             ax2.set_xlim(xmin, xmax)
             ax3.set_xlim(xmin, xmax)
+            
+            # xminとxmaxをprintする
+            print("xmin:"+str(xmin))
+            print("xmax:"+str(xmax))
+            # y1,y2,y3の最後の値をprintする
+            print("y1:"+str(y1[-1]))
+            print("y2:"+str(y2[-1]))
+            print("y3:"+str(y3[-1]))
             
             ax1.clear()
             ax1.plot(x, y1)
