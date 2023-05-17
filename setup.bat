@@ -8,5 +8,8 @@ REM パッケージのインストール
 pip install matplotlib
 pip install pylsl
 
+REM Pythonスクリプトの実行
+python main.py
+
 REM スクリプト実行終了後に仮想環境を無効化する
 deactivate
