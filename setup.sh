@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 python3 -m venv .venv
 DIR=$(realpath $(dirname $0))
 PATH=$DIR/.venv/bin/activate
