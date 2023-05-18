@@ -19,7 +19,7 @@ inlet = StreamInlet(streams[0])
 
 # データを取得し、グラフで表示する
 fig = plt.figure()
-
+xlim = [0,25] # 横軸の範囲
 x = []
 y1 = []
 y2 = []
@@ -57,39 +57,31 @@ def update_graph():
             # データが欠損している場合はスキップ
             if sample is None:
                 continue
-            while x and x[0] < timestamp - start_time - 0.1:
-                x.pop(0)
-                y1.pop(0)
-                y2.pop(0)
-                y3.pop(0)
+            if len(x) > 25:
+                xlim[0] += 1
+                xlim[1] += 1
             # データをプロット
-            x.append(timestamp - start_time)  # 経過時間を追加
+            x.append(len(y1))  # 経過時間を追加
             y1.append(sample[0])
             y2.append(sample[1])
             y3.append(sample[2])
             
-            # 横軸の範囲を制限する
-            xmin = max(timestamp - start_time - 0.1, 0)  # 左端を0.1秒前に制限
-            xmax = timestamp - start_time
-            ax1.set_xlim(xmin, xmax)
-            ax2.set_xlim(xmin, xmax)
-            ax3.set_xlim(xmin, xmax)
-            
             # xminとxmaxをprintする
-            print("xmin:"+str(xmin))
-            print("xmax:"+str(xmax))
+            print("xmin:"+str(xlim[0]) + "\txmax:"+str(xlim[1]))
             # y1,y2,y3の最後の値をprintする
-            print("y1:"+str(y1[-1]))
-            print("y2:"+str(y2[-1]))
-            print("y3:"+str(y3[-1]))
+            print("y1:"+str(y1[-1])+"\ty2:"+str(y2[-1]) + "\ty3:"+str(y3[-1]))
             
             ax1.clear()
+            ax1.set_xlim(xlim)
             ax1.plot(x, y1)
             ax2.clear()
+            ax2.set_xlim(xlim)
             ax2.plot(x, y2)
             ax3.clear()
+            ax3.set_xlim(xlim)
             ax3.plot(x, y3)
             canvas.draw()
+
 
 def pause_thread():
     global pause
