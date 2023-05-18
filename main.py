@@ -61,26 +61,27 @@ def update_graph():
                 xlim[0] += 1
                 xlim[1] += 1
             # データをプロット
-            x.append(len(y1))  # 経過時間を追加
+            x.append(len(y1) * 0.04)  # 時間を0.04秒ごとに増加
             y1.append(sample[0])
             y2.append(sample[1])
             y3.append(sample[2])
             
             # xminとxmaxをprintする
-            print("xmin:"+str(xlim[0]) + "\txmax:"+str(xlim[1]))
+            print("xmin:" + str(xlim[0] * 0.04) + "\txmax:" + str(xlim[1] * 0.04))
             # y1,y2,y3の最後の値をprintする
-            print("y1:"+str(y1[-1])+"\ty2:"+str(y2[-1]) + "\ty3:"+str(y3[-1]))
+            print("y1:" + str(y1[-1]) + "\ty2:" + str(y2[-1]) + "\ty3:" + str(y3[-1]))
             
             ax1.clear()
-            ax1.set_xlim(xlim)
+            ax1.set_xlim(xlim[0] * 0.04, xlim[1] * 0.04)    
             ax1.plot(x, y1)
             ax2.clear()
-            ax2.set_xlim(xlim)
+            ax2.set_xlim(xlim[0] * 0.04, xlim[1] * 0.04)
             ax2.plot(x, y2)
             ax3.clear()
-            ax3.set_xlim(xlim)
+            ax3.set_xlim(xlim[0] * 0.04, xlim[1] * 0.04)
             ax3.plot(x, y3)
             canvas.draw()
+
 
 
 def pause_thread():
