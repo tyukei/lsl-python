@@ -24,6 +24,7 @@ x = []
 y1 = []
 y2 = []
 y3 = []
+y4 = []
 running = True  # グラフの継続フラグ
 pause = False
 start_time = None  # 最初のデータのタイムスタンプ
@@ -65,6 +66,11 @@ def update_graph():
             y1.append(sample[0])
             y2.append(sample[1])
             y3.append(sample[2])
+            last_x = y1[-1]
+            last_y = y2[-1]
+            last_z = y3[-1]
+            magnitude = (last_x**2 + last_y**2 + last_z**2) ** 0.5
+            y4.append(magnitude)
             
             # xminとxmaxをprintする
             print("xmin:" + str(xlim[0] * 0.04) + "\txmax:" + str(xlim[1] * 0.04))
@@ -81,8 +87,9 @@ def update_graph():
             ax3.set_xlim(xlim[0] * 0.04, xlim[1] * 0.04)
             ax3.plot(x, y3)
             canvas.draw()
-
-
+            ax4.clear()
+            ax4.set_xlim(xlim[0] * 0.04, xlim[1] * 0.04)
+            ax4.plot(x, y4)
 
 def pause_thread():
     global pause
@@ -92,26 +99,39 @@ def resume_thread():
     global pause
     pause = False
 
+# ウィンドウのサイズに合わせてキャンバスのサイズを調整する関数
+def resize_canvas(event):
+    window_width = event.width
+    window_height = event.height
+    canvas.get_tk_widget().configure(width=window_width, height=window_height)
+
 # GUIの設定
 root = tk.Tk()
+root.geometry("800x600")  # 初期のウィンドウサイズ
 root.title("Real-time Graph")
+
 
 # サブプロットを作成
 ax1 = fig.add_subplot(311)
 ax2 = fig.add_subplot(312)
 ax3 = fig.add_subplot(313)
+ax4 = fig.add_subplot(313)
 
-# Figureを描画するためのキャンバスを作成
+
+
+# キャンバスを作成
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().pack()
 
 # グラフの初期描画
 ax1.plot(x, y1)
-ax1.set_ylabel('Data 1')
+ax1.set_ylabel('ACC X')
 ax2.plot(x, y2)
-ax2.set_ylabel('Data 2')
+ax2.set_ylabel('ACC Y')
 ax3.plot(x, y3)
-ax3.set_ylabel('Data 3')
+ax3.set_ylabel('ACC Z')
+ax4.plot(x, y4)
+ax4.set_ylabel('Magnitude')
 
 graph_thread = threading.Thread(target=update_graph)
 graph_thread.start()
@@ -120,6 +140,9 @@ start_stop_button = tk.Button(root, text='Stop', command=start_stop_button_click
 start_stop_button.pack()
 quit_button = tk.Button(root, text='Quit', command=quit_button_click)
 quit_button.pack()
+
+# ウィンドウのサイズ変更イベントにリサイズ関数をバインド
+root.bind("<Configure>", resize_canvas)
 
 root.mainloop()
 
