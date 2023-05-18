@@ -27,7 +27,6 @@ y3 = []
 y4 = []
 running = True  # グラフの継続フラグ
 pause = False
-start_time = None  # 最初のデータのタイムスタンプ
 
 def stop_graph():
     global running
@@ -48,13 +47,10 @@ def quit_button_click():
     root.quit()
 
 def update_graph():
-    global start_time
     while running:
         if not pause:
             # データを取得
             sample, timestamp = inlet.pull_sample()
-            if start_time is None:
-                start_time = timestamp
             # データが欠損している場合はスキップ
             if sample is None:
                 continue
@@ -99,23 +95,18 @@ def resume_thread():
     global pause
     pause = False
 
-# ウィンドウのサイズに合わせてキャンバスのサイズを調整する関数
-def resize_canvas(event):
-    window_width = event.width
-    window_height = event.height
-    canvas.get_tk_widget().configure(width=window_width, height=window_height)
 
 # GUIの設定
 root = tk.Tk()
-root.geometry("800x600")  # 初期のウィンドウサイズ
+root.geometry("1000x800")  # 初期のウィンドウサイズ
 root.title("Real-time Graph")
 
 
 # サブプロットを作成
-ax1 = fig.add_subplot(311)
-ax2 = fig.add_subplot(312)
-ax3 = fig.add_subplot(313)
-ax4 = fig.add_subplot(313)
+ax1 = fig.add_subplot(411)
+ax2 = fig.add_subplot(412)
+ax3 = fig.add_subplot(413)
+ax4 = fig.add_subplot(414)
 
 
 
@@ -133,6 +124,20 @@ ax3.set_ylabel('ACC Z')
 ax4.plot(x, y4)
 ax4.set_ylabel('Magnitude')
 
+# 上下の枠を非表示にする
+ax1.spines['bottom'].set_visible(False)
+ax2.spines['top'].set_visible(False)
+ax2.spines['bottom'].set_visible(False)
+ax3.spines['top'].set_visible(False)
+ax3.spines['bottom'].set_visible(False)
+ax4.spines['top'].set_visible(False)
+
+# サブプロット間の余白を調整
+plt.subplots_adjust(hspace=0)
+
+
+
+
 graph_thread = threading.Thread(target=update_graph)
 graph_thread.start()
 
@@ -141,8 +146,6 @@ start_stop_button.pack()
 quit_button = tk.Button(root, text='Quit', command=quit_button_click)
 quit_button.pack()
 
-# ウィンドウのサイズ変更イベントにリサイズ関数をバインド
-root.bind("<Configure>", resize_canvas)
 
 root.mainloop()
 
