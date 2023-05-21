@@ -41,7 +41,7 @@ def update_graph():
             # データが欠損している場合はスキップ
             if sample is None:
                 continue
-            if len(x) > 25:
+            if len(x) > 250:
                 xlim[0] += 1
                 xlim[1] += 1
             # データをプロット
@@ -86,6 +86,7 @@ def resume_thread():
     pause = False
 
 
+    
 def main():
     global streams, inlet, fig, xlim, x, y1, y2, y3, y4, running, pause, root, start_stop_button, quit_button, ax1, ax2, ax3, ax4, canvas
 
@@ -96,7 +97,7 @@ def main():
 
 
     # ストリームの情報を取得
-    streams = resolve_byprop('type', 'ACC', timeout=2)
+    streams = resolve_byprop('type', 'EEG', timeout=2)
     if len(streams) == 0:
         print("ストリームが見つかりませんでした。")
         exit()
@@ -105,7 +106,7 @@ def main():
 
     # データを取得し、グラフで表示する
     fig = plt.figure()
-    xlim = [0, 25]  # 横軸の範囲
+    xlim = [0, 250]  # 横軸の範囲
     x = []
     y1 = []
     y2 = []
