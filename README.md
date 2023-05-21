@@ -2,7 +2,7 @@
 lab streaming layer in python instead of matlab
 
 
-# 0514-2023
+# 0521-2023
 ## Demo
 XHROの加速度と合成を表しています
 
