@@ -5,3 +5,4 @@ PATH=$DIR/.venv/bin/activate
 source $PATH
 pip install matplotlib
 pip install pylsl
+deactivate
