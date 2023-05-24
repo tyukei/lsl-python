@@ -1,37 +1,50 @@
-import time
-import tkinter as tk
-import turtle
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from pylsl import resolve_byprop, StreamInlet
 
-# ウィンドウを作成
-root = tk.Tk()
-root.title("Real-time Graph")
-canvas = tk.Canvas(root, width=800, height=600)
-canvas.pack()
+# Create a new figure for the plot
+fig,ax = plt.subplots()
+line, = ax.plot([], [])
+title = ax.set_title(None, fontsize=15) # タイトルを追加
 
-# Turtleを作成
-t = turtle.RawTurtle(canvas)
+# Initialization function
+def init():
+    ax.set_xlim(xlim[0],xlim[1]) # x軸固定
+    ax.set_ylim(16000, 17000) # y軸固定
+    line.set_data([], [])
+    title.set_text("ACC") # タイトルを初期化
+    ax.set_xticks([]) # 横軸の目盛りを削除
+    ax.set_xlabel("Time 10sec")
+    return line,
 
-# グラフの描画設定
-t.pensize(2)
-t.speed(0)
-t.up()
-t.goto(-380, -280)
-t.down()
 
-# グラフを描画
-for i in range(1000):
-    # データを取得
+# Stream data update function
+def animate(i): 
+    # Get the latest sample
     sample, timestamp = inlet.pull_sample()
-    # データが欠損している場合はスキップ
-    if sample is None:
-        continue
-    x, y, z = sample
-    
-    # データをプロット
-    t.goto(i - 380, x * 100)
-    t.goto(i - 380, y * 100)
-    t.goto(i - 380, z * 100)
+    x = i/25
+    y = sample[0]
+    if(len(xdata) > 250):
+        xlim[0]  = x-10
+        xlim[1]  = x
+        ax.set_xlim(xlim[0], xlim[1])
+    xdata.append(x) 
+    ydata.append(y) 
+    line.set_data(xdata, ydata)
+    return line,
 
-    time.sleep(0.01)  # グラフ更新のための待機時間
+def main():
+    global xlim, xdata, ydata, inlet
+    xdata, ydata = [], []
+    streams = resolve_byprop('type', 'ACC', timeout=2)
+    inlet = StreamInlet(streams[0])
+    xlim = [0, 10]
 
-root.mainloop()
+    # Create the animation
+    ani = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=40, blit=True)
+
+    # Show the plot
+    plt.show()
+
+if __name__ == '__main__':
+    main()
