@@ -97,7 +97,7 @@ def main():
 
 
     # ストリームの情報を取得
-    streams = resolve_byprop('type', 'EEG', timeout=2)
+    streams = resolve_byprop('type', 'ACC', timeout=2)
     if len(streams) == 0:
         print("ストリームが見つかりませんでした。")
         exit()
