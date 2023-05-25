@@ -7,9 +7,11 @@ from pylsl import resolve_byprop, StreamInlet
 def init():
     ax.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax.set_ylim(0, 1000000) # y軸固定
-    line1, = ax.plot([], [], label='Line 1')
+    line1, = ax.plot([], [], label='temp')
     ax.set_xticks([]) # 横軸の目盛りを削除
-    ax.set_xlabel("Time 10sec")
+    ax.set_xlabel("Time 10sec") # x軸ラベル
+    ax.set_title("TEMP", fontsize=15) # タイトルを追加
+    ax.legend() # 凡例を追加
     return line1, 
 
 
@@ -39,7 +41,6 @@ def main():
     # Create a new figure for the plot
     fig,ax = plt.subplots()
     line1, = ax.plot([], [])
-    ax.set_title("TEMP", fontsize=15) # タイトルを追加
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=40, blit=True)
 
