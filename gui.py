@@ -5,49 +5,57 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from subprocess import Popen
 import pylsl
+from kivy.clock import Clock
 
 class DataProcessingApp(App):
     def build(self):
         # ルートとなるBoxLayout
-        root_layout = BoxLayout(orientation='vertical')
+        self.root_layout = BoxLayout(orientation='vertical')
 
         # テキストを配置するAnchorLayout
-        text_layout = AnchorLayout(anchor_x='center', anchor_y='center')
+        self.text_layout = AnchorLayout(anchor_x='center', anchor_y='center')
+
+        # ボタンを配置するBoxLayout
+        self.button_layout = BoxLayout(orientation='horizontal', spacing=10)
+        self.acc_button = Button(text='ACC', size_hint=(0.2, 1))
+        self.acc_button.bind(on_release=self.run_acc)
+        self.button_layout.add_widget(self.acc_button)
+
+        self.bioz_button = Button(text='BIOZ', size_hint=(0.2, 1))
+        self.bioz_button.bind(on_release=self.run_bioz)
+        self.button_layout.add_widget(self.bioz_button)
+
+        self.eeg_button = Button(text='EEG', size_hint=(0.2, 1))
+        self.eeg_button.bind(on_release=self.run_eeg)
+        self.button_layout.add_widget(self.eeg_button)
+
+        self.temp_button = Button(text='TEMP', size_hint=(0.2, 1))
+        self.temp_button.bind(on_release=self.run_temp)
+        self.button_layout.add_widget(self.temp_button)
+
+        self.root_layout.add_widget(self.text_layout)
+        self.root_layout.add_widget(self.button_layout)
+
+        # 初回のリロードを実行
+        self.reload_streams()
+
+        # タイマーを設定して定期的にリロードを実行
+        Clock.schedule_interval(lambda dt: self.reload_streams(), 5)
+
+        return self.root_layout
+
+    def reload_streams(self):
         streams = pylsl.resolve_streams()
         if streams == []:
+            self.text_layout.clear_widgets()
             label = Label(text='No stream found', font_size=50)
-            text_layout.add_widget(label)
-            root_layout.add_widget(text_layout)
-
-            reload_button = Button(text='Reload', size_hint=(0.2, 1))
-            reload_button.bind(on_release=self.run_reload)
-            root_layout.add_widget(reload_button)
+            self.text_layout.add_widget(label)
+            self.button_layout.opacity = 0  # ボタンを非表示にする
         else:
+            self.text_layout.clear_widgets()
             label = Label(text=streams[0].name(), font_size=50)
-            text_layout.add_widget(label)
-            root_layout.add_widget(text_layout)
-
-            # ボタンを配置するBoxLayout
-            button_layout = BoxLayout(orientation='horizontal', spacing=10)
-            acc_button = Button(text='ACC', size_hint=(0.2, 1))
-            acc_button.bind(on_release=self.run_acc)
-            button_layout.add_widget(acc_button)
-
-            bioz_button = Button(text='BIOZ', size_hint=(0.2, 1))
-            bioz_button.bind(on_release=self.run_bioz)
-            button_layout.add_widget(bioz_button)
-
-            eeg_button = Button(text='EEG', size_hint=(0.2, 1))
-            eeg_button.bind(on_release=self.run_eeg)
-            button_layout.add_widget(eeg_button)
-
-            temp_button = Button(text='TEMP', size_hint=(0.2, 1))
-            temp_button.bind(on_release=self.run_temp)
-            button_layout.add_widget(temp_button)
-
-            root_layout.add_widget(button_layout)
-
-        return root_layout
+            self.text_layout.add_widget(label)
+            self.button_layout.opacity = 1  # ボタンを表示する
 
     def run_acc(self, instance):
         Popen(['python', 'acc.py'])
@@ -60,11 +68,6 @@ class DataProcessingApp(App):
 
     def run_temp(self, instance):
         Popen(['python', 'temp.py'])
-
-    def run_reload(self, instance):
-        self.root.clear_widgets()
-        self.build()
-        DataProcessingApp().run()
 
 
 if __name__ == '__main__':
