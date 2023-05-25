@@ -6,5 +6,6 @@ source $PATH
 python3 -m pip install --upgrade pip
 pip install matplotlib
 pip install pylsl
+pip install PySimpleGUI
 python3 main-mac.py
 deactivate
