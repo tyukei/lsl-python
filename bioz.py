@@ -9,9 +9,10 @@ def init():
     line1, = ax.plot([], [], label='bioz 1')
     line2, = ax.plot([], [], label='bioz 2')
     ax.set_xticks([]) # 横軸の目盛りを削除
+    ax.set_yticks([]) # 横軸の目盛りを削除
     ax.set_xlabel("Time 10min") # x軸ラベル
-    ax.set_title("BIOZ 1/60 Hz", fontsize=15) # タイトルを追加
-    ax.legend() # 凡例を追加
+    ax.set_title("BIOZ 1/60 Hz") # タイトルを追加
+    ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', borderaxespad=0, fontsize=8)
     return line1, line2,
 
 
@@ -33,6 +34,8 @@ def animate(i):
     # Update the 3 line
     line1.set_data(xdata, y1data)
     line2.set_data(xdata, y2data)
+    ax.relim()
+    ax.autoscale_view()
     return line1, line2, 
 
 def main():
@@ -43,8 +46,8 @@ def main():
     xlim = [0, 10]
     # Create a new figure for the plot
     fig,ax = plt.subplots()
-    line1, = ax.plot([], [])
-    line2, = ax.plot([], [])
+    line1, = ax.plot([], [], color='red')
+    line2, = ax.plot([], [], color='blue')
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=60000, blit=True)
 
