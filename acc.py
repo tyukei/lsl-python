@@ -41,7 +41,6 @@ def animate(i):
     line3.set_data(xdata, y3data)
     ax.relim()
     ax.autoscale_view()
-    max_y = max(y1data + y2data + y3data)
     return line1, line2, line3,
 
 def main():
