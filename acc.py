@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from numpy import maximum_sctype, minimum
 from pylsl import resolve_byprop, StreamInlet
 
 # Initialization function
 def init():
     ax.set_xlim(xlim[0],xlim[1]) # x軸固定
-    ax.set_ylim(-1000, 20000) # y軸固定
-    line1, = ax.plot([], [], label='acc X')
-    line2, = ax.plot([], [], label='acc Y')
-    line3, = ax.plot([], [], label='acc Z')
+    line1, = ax.plot([], [], label='acc X', color='red')
+    line2, = ax.plot([], [], label='acc Y', color='blue')
+    line3, = ax.plot([], [], label='acc Z', color='green')
     ax.set_title("ACC") # タイトルを初期化
     ax.set_xticks([]) # 横軸の目盛りを削除
     ax.set_xlabel("Time 10sec")
@@ -37,6 +37,9 @@ def animate(i):
     line1.set_data(xdata, y1data)
     line2.set_data(xdata, y2data)
     line3.set_data(xdata, y3data)
+    ax.relim()
+    ax.autoscale_view()
+    max_y = max(y1data + y2data + y3data)
     return line1, line2, line3,
 
 def main():
@@ -47,9 +50,9 @@ def main():
     xlim = [0, 10]
     # Create a new figure for the plot
     fig,ax = plt.subplots()
-    line1, = ax.plot([], [])
-    line2, = ax.plot([], [])
-    line3, = ax.plot([], [])
+    line1, = ax.plot([], [], color='red')
+    line2, = ax.plot([], [], color='blue')
+    line3, = ax.plot([], [], color='green')
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=40, blit=True)
 

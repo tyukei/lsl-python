@@ -10,7 +10,7 @@ def init():
     line1, = ax.plot([], [], label='temp')
     ax.set_xticks([]) # 横軸の目盛りを削除
     ax.set_xlabel("Time 10sec") # x軸ラベル
-    ax.set_title("TEMP", fontsize=15) # タイトルを追加
+    ax.set_title("TEMP 1Hz", fontsize=15) # タイトルを追加
     ax.legend() # 凡例を追加
     return line1, 
 
@@ -19,10 +19,10 @@ def init():
 def animate(i): 
     # Get the latest sample
     sample, timestamp = inlet.pull_sample()
-    x = i/25
+    x = i
     y1 = sample[0]
     print(y1)
-    if(len(xdata) > 250):
+    if(len(xdata) > 10):
         xlim[0]  = x-10
         xlim[1]  = x
         ax.set_xlim(xlim[0], xlim[1])
@@ -42,7 +42,7 @@ def main():
     fig,ax = plt.subplots()
     line1, = ax.plot([], [])
     # Create the animation
-    anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=40, blit=True)
+    anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=1000, blit=True)
 
     # Show the plot
     plt.show()

@@ -9,8 +9,8 @@ def init():
     line1, = ax.plot([], [], label='bioz 1')
     line2, = ax.plot([], [], label='bioz 2')
     ax.set_xticks([]) # 横軸の目盛りを削除
-    ax.set_xlabel("Time 10sec") # x軸ラベル
-    ax.set_title("BIOZ", fontsize=15) # タイトルを追加
+    ax.set_xlabel("Time 10min") # x軸ラベル
+    ax.set_title("BIOZ 1/60 Hz", fontsize=15) # タイトルを追加
     ax.legend() # 凡例を追加
     return line1, line2,
 
@@ -19,12 +19,12 @@ def init():
 def animate(i): 
     # Get the latest sample
     sample, timestamp = inlet.pull_sample()
-    x = i/25
+    x = i
     y1 = sample[0]
     y2 = sample[1]
     print(y1, y2)
-    if(len(xdata) > 250):
-        xlim[0]  = x-10
+    if(len(xdata) > 10):
+        xlim[0]  = x-600
         xlim[1]  = x
         ax.set_xlim(xlim[0], xlim[1])
     xdata.append(x) 
@@ -46,7 +46,7 @@ def main():
     line1, = ax.plot([], [])
     line2, = ax.plot([], [])
     # Create the animation
-    anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=40, blit=True)
+    anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=60000, blit=True)
 
     # Show the plot
     plt.show()
