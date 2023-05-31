@@ -33,6 +33,10 @@ class DataProcessingApp(App):
         self.temp_button.bind(on_release=self.run_temp)
         self.button_layout.add_widget(self.temp_button)
 
+        self.temp_button = Button(text='OPT', size_hint=(0.2, 1))
+        self.temp_button.bind(on_release=self.run_opt)
+        self.button_layout.add_widget(self.temp_button)
+
         self.root_layout.add_widget(self.text_layout)
         self.root_layout.add_widget(self.button_layout)
 
@@ -68,7 +72,9 @@ class DataProcessingApp(App):
 
     def run_temp(self, instance):
         Popen(['python', 'temp.py'])
-
+        
+    def run_opt(self, instance):
+        Popen(['python', 'opt.py'])
 
 if __name__ == '__main__':
     DataProcessingApp().run()
