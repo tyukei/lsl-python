@@ -6,12 +6,12 @@ from pylsl import resolve_byprop, StreamInlet
 # Initialization function
 def init():
     ax.set_xlim(xlim[0],xlim[1]) # x軸固定
-    ax.set_ylim(0, 1000000) # y軸固定
-    line1, = ax.plot([], [], label='temp')
+    line1, = ax.plot([], [], label='temp', color='red')
     ax.set_xticks([]) # 横軸の目盛りを削除
+    ax.set_yticks([]) # 縦軸の目盛りを削除
     ax.set_xlabel("Time 10sec") # x軸ラベル
-    ax.set_title("TEMP 1Hz", fontsize=15) # タイトルを追加
-    ax.legend() # 凡例を追加
+    ax.set_title("TEMP 1Hz") # タイトルを追加
+    ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', borderaxespad=0, fontsize=8)
     return line1, 
 
 
@@ -30,6 +30,8 @@ def animate(i):
     y1data.append(y1) 
     # Update the 3 line
     line1.set_data(xdata, y1data)
+    ax.relim()
+    ax.autoscale_view()
     return line1,
 
 def main():
@@ -40,7 +42,7 @@ def main():
     xlim = [0, 10]
     # Create a new figure for the plot
     fig,ax = plt.subplots()
-    line1, = ax.plot([], [])
+    line1, = ax.plot([], [], color='red')
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=1000, blit=True)
 
