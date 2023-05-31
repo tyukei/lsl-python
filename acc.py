@@ -5,15 +5,13 @@ from pylsl import resolve_byprop, StreamInlet
 # Initialization function
 def init():
     ax.set_xlim(xlim[0],xlim[1]) # x軸固定
-    line1, = ax.plot([], [], label='accX', color='red')
-    line2, = ax.plot([], [], label='accY', color='blue')
-    line3, = ax.plot([], [], label='accZ', color='green')
+    line1, = ax.plot([], [], label='X', color='red')
+    line2, = ax.plot([], [], label='Y', color='blue')
+    line3, = ax.plot([], [], label='Z', color='green')
     ax.set_title("ACC") # タイトルを初期化
     ax.set_xticks([]) # 横軸の目盛りを削除
     ax.set_yticks([]) # 縦軸の目盛りを削除
     ax.set_xlabel("Time 10sec")
-    ax.legend() # 凡例を追加
-    # 凡例の位置をグラフの外側に設定
     ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', borderaxespad=0, fontsize=8)
     return line1, line2, line3, 
 

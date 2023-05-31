@@ -5,9 +5,8 @@ from pylsl import resolve_byprop, StreamInlet
 # Initialization function
 def init():
     ax.set_xlim(xlim[0],xlim[1]) # x軸固定
-    ax.set_ylim(-1000, 400000) # y軸固定
-    line1, = ax.plot([], [], label='bioz 1')
-    line2, = ax.plot([], [], label='bioz 2')
+    line1, = ax.plot([], [], label='1')
+    line2, = ax.plot([], [], label='2')
     ax.set_xticks([]) # 横軸の目盛りを削除
     ax.set_yticks([]) # 横軸の目盛りを削除
     ax.set_xlabel("Time 10min") # x軸ラベル
