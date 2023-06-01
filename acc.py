@@ -5,7 +5,7 @@ from pylsl import resolve_byprop, StreamInlet
 # Initialization function
 def init():
     ax.set_xlim(xlim[0],xlim[1]) # x軸固定
-    ax.set_ylim(-20000, 20000) # y軸固定
+    # ax.set_ylim(-20000, 20000) # y軸固定
     line1, = ax.plot([], [], label='X', color='red')
     line2, = ax.plot([], [], label='Y', color='blue')
     line3, = ax.plot([], [], label='Z', color='green')
@@ -38,8 +38,8 @@ def animate(i):
     line1.set_data(xdata, y1data)
     line2.set_data(xdata, y2data)
     line3.set_data(xdata, y3data)
-    # ax.relim()
-    # ax.autoscale_view()
+    ax.relim()
+    ax.autoscale_view()
     return line1, line2, line3,
 
 def main():
