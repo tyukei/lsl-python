@@ -9,13 +9,6 @@ def init():
     ax2.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax3.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax4.set_xlim(xlim[0],xlim[1]) # x軸固定
-    # delte frame botton and top in graph
-    ax1.spines['bottom'].set_visible(False)
-    ax2.spines['top'].set_visible(False)
-    ax2.spines['bottom'].set_visible(False)
-    ax3.spines['top'].set_visible(False)
-    ax3.spines['bottom'].set_visible(False)
-    ax4.spines['top'].set_visible(False)
     # delete x axis 
     ax1.set_xticks([]) # 横軸の目盛りを削除
     ax2.set_xticks([]) # 横軸の目盛りを削除
@@ -30,13 +23,18 @@ def init():
     ax2.set_ylabel('2')
     ax3.set_ylabel('3')
     ax4.set_ylabel('Magnitude')
+    ax1r.set_yticks([])
+    ax2r.set_yticks([])
+    ax3r.set_yticks([])
+    ax4r.set_yticks([])
+
     return line1, line2, line3, linemag,
 
 
 # Stream data update function
 def animate(i, ax1, ax2, ax3, ax4): 
     # Get the latest sample
-    plt.cla()
+
     sample, timestamp = inlet.pull_sample()
     x = i/25
     y1 = sample[0]
@@ -44,7 +42,14 @@ def animate(i, ax1, ax2, ax3, ax4):
     y3 = sample[2]
     magnitude = (y1**2 + y2**2 + y3**2)**0.5
     print(y1, y2, y3, magnitude)
-
+    label1=ax1r.set_ylabel(f"{np.mean(y1data):.0f}")
+    ax2r.set_ylabel(f"{np.mean(y2data):.0f}")
+    ax3r.set_ylabel(f"{np.mean(y3data):.0f}")
+    ax4r.set_ylabel(f"{np.mean(ymagdata):.0f}")
+    ax1r.figure.canvas.draw()
+    ax2r.figure.canvas.draw()
+    ax3r.figure.canvas.draw()
+    ax4r.figure.canvas.draw()
     if(len(xdata) > 250):
         xlim[0]  = x-10
         xlim[1]  = x
@@ -69,16 +74,21 @@ def animate(i, ax1, ax2, ax3, ax4):
     ax3.autoscale_view()
     ax4.relim()
     ax4.autoscale_view()
+    
     return line1, line2, line3, linemag,
 
 def main():
-    global xlim, xdata, y1data, y2data, y3data, ymagdata, inlet, ax1, ax2,ax3,ax4, line1, line2, line3, linemag
+    global xlim, xdata, y1data, y2data, y3data, ymagdata, inlet, ax1, ax1r, ax2r, ax2, ax3r, ax3, ax4r, ax4, line1, line2, line3, linemag
     xdata, y1data, y2data, y3data, ymagdata = [], [], [], [], []
     streams = resolve_byprop('type', 'ACC', timeout=2)
     inlet = StreamInlet(streams[0])
     xlim = [0, 10]
     # Create a new figure for the plot
     fig,(ax1, ax2, ax3, ax4) = plt.subplots(nrows=4, sharex=True)
+    ax1r = ax1.twinx()
+    ax2r = ax2.twinx()
+    ax3r = ax3.twinx()
+    ax4r = ax4.twinx()
     line1, = ax1.plot([], [], label='X', color='red')
     line2, = ax2.plot([], [], label='Y', color='blue')
     line3, = ax3.plot([], [], label='Z', color='green')
