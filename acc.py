@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from pylsl import resolve_byprop, StreamInlet
 import numpy as np
+import math
 
 # Initialization function
 def init():
@@ -19,17 +20,43 @@ def init():
     ax2.set_yticks([]) # 横軸の目盛りを削除
     ax3.set_yticks([]) # 横軸の目盛りを削除
     ax4.set_yticks([]) # 横軸の目盛りを削除
-    ax1.set_ylabel('1')
-    ax2.set_ylabel('2')
-    ax3.set_ylabel('3')
+    ax1.set_ylabel('ch1')
+    ax2.set_ylabel('ch2')
+    ax3.set_ylabel('ch3')
     ax4.set_ylabel('Magnitude')
     ax1r.set_yticks([])
     ax2r.set_yticks([])
     ax3r.set_yticks([])
     ax4r.set_yticks([])
+    # 上と下の枠線を消す
+    ax1.spines['bottom'].set_visible(False)
+    ax1r.spines['bottom'].set_visible(False)
+    ax2.spines['top'].set_visible(False)
+    ax2r.spines['top'].set_visible(False)
+    ax2.spines['bottom'].set_visible(False)
+    ax2r.spines['bottom'].set_visible(False)
+    ax3.spines['top'].set_visible(False)
+    ax3r.spines['top'].set_visible(False)
+    ax3.spines['bottom'].set_visible(False)
+    ax3r.spines['bottom'].set_visible(False)
+    ax4.spines['top'].set_visible(False)
+    ax4r.spines['top'].set_visible(False)
+    # axの上下の間を詰める
+    plt.subplots_adjust(hspace=0)
+
 
     return line1, line2, line3, linemag,
 
+def convert_data(y):
+    # 少数第２
+    converted = y * 6.1035 * 10**-2
+    converted = math.floor(converted * 100) / 100
+    return converted
+
+def magnitude_data(y1, y2, y3):
+    magnitude = (y1**2 + y2**2 + y3**2)**0.5
+    magnitude = math.floor(magnitude * 100) / 100
+    return magnitude
 
 # Stream data update function
 def animate(i, ax1, ax2, ax3, ax4): 
@@ -37,10 +64,11 @@ def animate(i, ax1, ax2, ax3, ax4):
 
     sample, timestamp = inlet.pull_sample()
     x = i/25
-    y1 = sample[0]
-    y2 = sample[1]
-    y3 = sample[2]
-    magnitude = (y1**2 + y2**2 + y3**2)**0.5
+    y1 = convert_data(sample[0])
+    y2 = convert_data(sample[1])
+    y3 = convert_data(sample[2])
+    magnitude = magnitude_data(y1, y2, y3)
+
     print(y1, y2, y3, magnitude)
     if(len(xdata) > 250):
         xlim[0]  = x-10
@@ -49,11 +77,11 @@ def animate(i, ax1, ax2, ax3, ax4):
         ax2.set_xlim(xlim[0], xlim[1])
         ax3.set_xlim(xlim[0], xlim[1])
         ax4.set_xlim(xlim[0], xlim[1])
-    if(i % 25 == 0):
-        ax1r.set_ylabel(f"{np.mean(y1data):.0f}")
-        ax2r.set_ylabel(f"{np.mean(y2data):.0f}")
-        ax3r.set_ylabel(f"{np.mean(y3data):.0f}")
-        ax4r.set_ylabel(f"{np.mean(ymagdata):.0f}")
+    if(i % 25 == 0) and (i != 0):
+        ax1r.set_ylabel(f"{np.mean(y1data):.0f}mg")
+        ax2r.set_ylabel(f"{np.mean(y2data):.0f}mg")
+        ax3r.set_ylabel(f"{np.mean(y3data):.0f}mg")
+        ax4r.set_ylabel(f"{np.mean(ymagdata):.0f}mg")
         ax1r.figure.canvas.draw()
         ax2r.figure.canvas.draw()
         ax3r.figure.canvas.draw()

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from pylsl import resolve_byprop, StreamInlet
+import numpy as np
 
 # Initialization function
 def init():
