@@ -42,14 +42,6 @@ def animate(i, ax1, ax2, ax3, ax4):
     y3 = sample[2]
     magnitude = (y1**2 + y2**2 + y3**2)**0.5
     print(y1, y2, y3, magnitude)
-    label1=ax1r.set_ylabel(f"{np.mean(y1data):.0f}")
-    ax2r.set_ylabel(f"{np.mean(y2data):.0f}")
-    ax3r.set_ylabel(f"{np.mean(y3data):.0f}")
-    ax4r.set_ylabel(f"{np.mean(ymagdata):.0f}")
-    ax1r.figure.canvas.draw()
-    ax2r.figure.canvas.draw()
-    ax3r.figure.canvas.draw()
-    ax4r.figure.canvas.draw()
     if(len(xdata) > 250):
         xlim[0]  = x-10
         xlim[1]  = x
@@ -57,6 +49,15 @@ def animate(i, ax1, ax2, ax3, ax4):
         ax2.set_xlim(xlim[0], xlim[1])
         ax3.set_xlim(xlim[0], xlim[1])
         ax4.set_xlim(xlim[0], xlim[1])
+    if(i % 25 == 0):
+        ax1r.set_ylabel(f"{np.mean(y1data):.0f}")
+        ax2r.set_ylabel(f"{np.mean(y2data):.0f}")
+        ax3r.set_ylabel(f"{np.mean(y3data):.0f}")
+        ax4r.set_ylabel(f"{np.mean(ymagdata):.0f}")
+        ax1r.figure.canvas.draw()
+        ax2r.figure.canvas.draw()
+        ax3r.figure.canvas.draw()
+        ax4r.figure.canvas.draw()
     xdata.append(x) 
     y1data.append(y1) 
     y2data.append(y2)
