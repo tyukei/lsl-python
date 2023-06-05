@@ -6,7 +6,7 @@ import math
 
 # Initialization function
 def init():
-    ax1.set_title('ACC')
+    ax1.set_title('ACC 25Hz')
     ax4.set_xlabel('Time 10s')
     ax1.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax2.set_xlim(xlim[0],xlim[1]) # x軸固定
