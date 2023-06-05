@@ -79,6 +79,11 @@ def animate(i, ax1, ax2, ax3, ax4):
         ax2.set_xlim(xlim[0], xlim[1])
         ax3.set_xlim(xlim[0], xlim[1])
         ax4.set_xlim(xlim[0], xlim[1])
+        del xdata[0]
+        del y1data[0]
+        del y2data[0]
+        del y3data[0]
+        del ymagdata[0]
     if(i % 25 == 0) and (i != 0):
         ax1r.set_ylabel(f"{np.mean(y1data):.0f}mg")
         ax2r.set_ylabel(f"{np.mean(y2data):.0f}mg")
@@ -88,6 +93,10 @@ def animate(i, ax1, ax2, ax3, ax4):
         ax2r.figure.canvas.draw()
         ax3r.figure.canvas.draw()
         ax4r.figure.canvas.draw()
+        ax1.set_ylim(np.min(y1data), np.max(y1data))
+        ax2.set_ylim(np.min(y2data), np.max(y2data))
+        ax3.set_ylim(np.min(y3data), np.max(y3data))
+        ax4.set_ylim(np.min(ymagdata), np.max(ymagdata))
     xdata.append(x) 
     y1data.append(y1) 
     y2data.append(y2)
@@ -97,14 +106,6 @@ def animate(i, ax1, ax2, ax3, ax4):
     line2.set_data(xdata, y2data)
     line3.set_data(xdata, y3data)
     linemag.set_data(xdata, ymagdata)
-    ax1.relim()
-    ax1.autoscale_view()
-    ax2.relim()
-    ax2.autoscale_view()
-    ax3.relim()
-    ax3.autoscale_view()
-    ax4.relim()
-    ax4.autoscale_view()
     
     return line1, line2, line3, linemag,
 
