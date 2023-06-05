@@ -6,6 +6,8 @@ import math
 
 # Initialization function
 def init():
+    ax1.set_title('ECG 250Hz')
+    ax3.set_xlabel('Time 10s')
     ax1.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax2.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax3.set_xlim(xlim[0],xlim[1]) # x軸固定
@@ -34,7 +36,6 @@ def init():
     return line1, line2, line3,
 
 def convert_data(y):
-    # 少数第２
     converted = y * 180 // math.pi
     converted = math.floor(converted * 100) / 100
     return converted
@@ -59,6 +60,10 @@ def animate(i):
         ax1.set_xlim(xlim[0], xlim[1])
         ax2.set_xlim(xlim[0], xlim[1])
         ax3.set_xlim(xlim[0], xlim[1])
+        del xdata[0]
+        del y1data[0]
+        del y2data[0]
+        del y3data[0]
     if x != 0:
         ax1r.set_ylabel(f"{np.mean(y1data):.0f}Ω/rad")
         ax2r.set_ylabel(f"{np.mean(y2data):.0f}Ω/rad")
@@ -66,6 +71,9 @@ def animate(i):
         ax1r.figure.canvas.draw()
         ax2r.figure.canvas.draw()
         ax3r.figure.canvas.draw()
+        ax1.set_ylim(min(y1data), max(y1data))
+        ax2.set_ylim(min(y2data), max(y2data))
+        ax3.set_ylim(min(y3data), max(y3data))
     xdata.append(x) 
     y1data.append(y1) 
     y2data.append(y2)
@@ -74,10 +82,6 @@ def animate(i):
     line1.set_data(xdata, y1data)
     line2.set_data(xdata, y2data)
     line3.set_data(xdata, y3data)
-    ax1.relim()
-    ax1.autoscale_view()
-    ax2.relim()
-    ax2.autoscale_view()
     return line1, line2, line3,
 
 def main():

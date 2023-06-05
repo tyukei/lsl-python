@@ -83,12 +83,6 @@ def animate(i):
     line1.set_data(xdata, y1data)
     line2.set_data(xdata, y2data)
     line3.set_data(xdata, y3data)
-    ax1.relim()
-    ax1.autoscale_view()
-    ax2.relim()
-    ax2.autoscale_view()
-    ax3.relim()
-    ax3.autoscale_view()
     return line1, line2, line3,
 
 def main():
