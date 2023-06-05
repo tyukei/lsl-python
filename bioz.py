@@ -7,33 +7,24 @@ import math
 # Initialization function
 def init():
     ax1.set_title('BIOZ 1/60Hz')
-    ax3.set_xlabel('Time 10min')
+    ax2.set_xlabel('Time 10min')
     ax1.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax2.set_xlim(xlim[0],xlim[1]) # x軸固定
-    ax3.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax1.set_xticks([]) # 横軸の目盛りを削除
     ax2.set_xticks([]) # 横軸の目盛りを削除
-    ax3.set_xticks([]) # 横軸の目盛りを削除
     ax1.set_yticks([]) # 横軸の目盛りを削除
     ax2.set_yticks([]) # 横軸の目盛りを削除
-    ax3.set_yticks([]) # 横軸の目盛りを削除
     ax1.set_ylabel('ch1')
     ax2.set_ylabel('ch2')
-    ax3.set_ylabel('Magnitude')
     ax1r.set_yticks([])
     ax2r.set_yticks([])
-    ax3r.set_yticks([])
     # 上と下の枠線を消す
     ax1.spines['bottom'].set_visible(False)
     ax1r.spines['bottom'].set_visible(False)
     ax2.spines['top'].set_visible(False)
     ax2r.spines['top'].set_visible(False)
-    ax2.spines['bottom'].set_visible(False)
-    ax2r.spines['bottom'].set_visible(False)
-    ax3.spines['top'].set_visible(False)
-    ax3r.spines['top'].set_visible(False)
     plt.subplots_adjust(hspace=0)
-    return line1, line2, line3,
+    return line1, line2, 
 
 def convert_data(y):
     converted = y * 180 // math.pi
@@ -59,45 +50,36 @@ def animate(i):
         xlim[1]  = x
         ax1.set_xlim(xlim[0], xlim[1])
         ax2.set_xlim(xlim[0], xlim[1])
-        ax3.set_xlim(xlim[0], xlim[1])
         del xdata[0]
         del y1data[0]
         del y2data[0]
-        del y3data[0]
     if x != 0:
-        ax1r.set_ylabel(f"{np.mean(y1data):.0f}Ω/rad")
-        ax2r.set_ylabel(f"{np.mean(y2data):.0f}Ω/rad")
-        ax3r.set_ylabel(f"{np.mean(y3data):.0f}Ω/rad")
+        ax1r.set_ylabel(f"{np.mean(y1data):.0f}Ω")
+        ax2r.set_ylabel(f"{np.mean(y2data):.0f}rad")
         ax1r.figure.canvas.draw()
         ax2r.figure.canvas.draw()
-        ax3r.figure.canvas.draw()
         ax1.set_ylim(min(y1data), max(y1data))
         ax2.set_ylim(min(y2data), max(y2data))
-        ax3.set_ylim(min(y3data), max(y3data))
     xdata.append(x) 
     y1data.append(y1) 
     y2data.append(y2)
-    y3data.append(y3)
     # Update the 3 line
     line1.set_data(xdata, y1data)
     line2.set_data(xdata, y2data)
-    line3.set_data(xdata, y3data)
-    return line1, line2, line3,
+    return line1, line2,
 
 def main():
-    global xlim, xdata, y1data, y2data, y3data, inlet, ax1, ax1r, ax2, ax2r, ax3, ax3r, line1, line2, line3
-    xdata, y1data, y2data, y3data = [], [], [], []
+    global xlim, xdata, y1data, y2data, inlet, ax1, ax1r, ax2, ax2r, line1, line2
+    xdata, y1data, y2data = [], [], []
     streams = resolve_byprop('type', 'BIOZ', timeout=2)
     inlet = StreamInlet(streams[0])
     xlim = [0, 10]
     # Create a new figure for the plot
-    fig,(ax1, ax2, ax3) = plt.subplots(nrows=3, sharex=True)
+    fig,(ax1, ax2) = plt.subplots(nrows=2, sharex=True)
     ax1r = ax1.twinx()
     ax2r = ax2.twinx()
-    ax3r = ax3.twinx()
     line1, = ax1.plot([], [], color='red')
     line2, = ax2.plot([], [], color='blue')
-    line3, = ax3.plot([], [], color='green')
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=60000, blit=True)
 

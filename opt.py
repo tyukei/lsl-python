@@ -130,10 +130,10 @@ def main():
     ax3r = ax3.twinx()
     ax4r = ax4.twinx()
     ax5r = ax5.twinx()
-    line1, = ax1.plot([], [], color='red')
-    line2, = ax2.plot([], [], color='blue')
+    line1, = ax1.plot([], [], color='over red')
+    line2, = ax2.plot([], [], color='red')
     line3, = ax3.plot([], [], color='green')
-    line4, = ax4.plot([], [], color='yellow')
+    line4, = ax4.plot([], [], color='brew')
     line5, = ax5.plot([], [], color='black')
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=None, interval=20, blit=True)

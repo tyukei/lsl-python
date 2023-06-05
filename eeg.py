@@ -20,7 +20,7 @@ def init():
     ax3.set_yticks([]) # 横軸の目盛りを削除
     ax1.set_ylabel('ch1')
     ax2.set_ylabel('ch2')
-    ax3.set_ylabel('Magnitude')
+    ax3.set_ylabel('ch1 - ch2')
     ax1r.set_yticks([])
     ax2r.set_yticks([])
     ax3r.set_yticks([])
@@ -42,8 +42,7 @@ def convert_data(y):
     return converted
 
 def magnitude_data(y1, y2):
-    magnitude = (y1**2 + y2**2)**0.5
-    magnitude = math.floor(magnitude * 100) / 100
+    magnitude = y1 - y2
     return magnitude
 
 # Stream data update function
