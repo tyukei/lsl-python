@@ -6,8 +6,8 @@ import math
 
 # Initialization function
 def init():
-    ax1.set_title('ECG 250Hz')
-    ax3.set_xlabel('Time 10s')
+    ax1.set_title('BIOZ 1/60Hz')
+    ax3.set_xlabel('Time 10min')
     ax1.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax2.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax3.set_xlim(xlim[0],xlim[1]) # x軸固定
