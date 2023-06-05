@@ -7,7 +7,7 @@ import math
 # Initialization function
 def init():
     # title
-    ax1.set_title('EEG')
+    ax1.set_title('EEG 250Hz')
     ax3.set_xlabel('Time 10s')
     ax1.set_xlim(xlim[0],xlim[1]) # x軸固定
     ax2.set_xlim(xlim[0],xlim[1]) # x軸固定
@@ -37,7 +37,6 @@ def init():
     return line1, line2, line3,
 
 def convert_data(y):
-    # 少数第２
     converted = y * ((2*4.5 // 24) // 0x1000000) * 1000 * 1000
     converted = math.floor(converted * 100) / 100
     return converted
@@ -62,6 +61,10 @@ def animate(i):
         ax1.set_xlim(xlim[0], xlim[1])
         ax2.set_xlim(xlim[0], xlim[1])
         ax3.set_xlim(xlim[0], xlim[1])
+        del xdata[0]
+        del y1data[0]
+        del y2data[0]
+        del y3data[0]
     if i % 250 == 0:
         ax1r.set_ylabel(f"{np.mean(y1data):.0f}μV")
         ax2r.set_ylabel(f"{np.mean(y2data):.0f}μV")
@@ -69,6 +72,9 @@ def animate(i):
         ax1r.figure.canvas.draw()
         ax2r.figure.canvas.draw()
         ax3r.figure.canvas.draw()
+        ax1.set_ylim(np.min(y1data), np.max(y1data))
+        ax2.set_ylim(np.min(y2data), np.max(y2data))
+        ax3.set_ylim(np.min(y3data), np.max(y3data))
     xdata.append(x) 
     y1data.append(y1) 
     y2data.append(y2)
