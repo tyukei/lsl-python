@@ -2,6 +2,9 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+from pylsl import resolve_byprop, StreamInlet
+
+x, y = [], []
 
 def setup_gui():
     st.title('XHRO LSL Viewer')
@@ -12,25 +15,33 @@ def setup_gui():
     norm = st.sidebar.checkbox('Norm.')
 
 def setup_graph():
+    streams = resolve_byprop('type', 'ACC', timeout=2)
+    inlet = StreamInlet(streams[0])
     # グラフ表示領域を取得
     graph = st.empty()
     # メインループ
     frame = 0
     while True:
-        update(frame, graph)
+        update(frame, graph, inlet)
         frame += 1
 
 # アニメーションのフレーム更新関数
-def update(frame, graph):
+def update(frame, graph, inlet):
     # データ生成
-    x = np.linspace(0, 10, 100)
-    y = np.sin(x + frame / 10.0)
-    
+    # x = np.linspace(0, 10, 100)
+    # y = np.sin(x + frame / 10.0)
+    sample, timestamp = inlet.pull_sample()
+    if sample is None:  # No more samples available, append a placeholder value
+        x.append(frame)
+        y.append(np.nan)
+    else:
+        x.append(frame)
+        y.append(sample[0])
+
     # グラフ描画
     fig, ax = plt.subplots()
     ax.plot(x, y)
-    ax.set_ylim(-1.5, 1.5)
-    
+
     # グラフを表示
     graph.pyplot(fig)
     
