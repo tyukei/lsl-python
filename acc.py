@@ -128,7 +128,6 @@ def main():
     # Create the animation
     anim = animation.FuncAnimation(fig, animate, init_func=init, frames=10000000, interval=40, blit=True, fargs=(ax1, ax2, ax3, ax4))
 
-
     # Show the plot
     # plt.tight_layout()
     plt.show()
