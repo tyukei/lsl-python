@@ -26,13 +26,17 @@ def setup_graph():
     plt.ylim(0, 1)
     plt.xlabel('x')
     plt.title('test')
-    line_ani = animation.FuncAnimation(fig, update_line, 10, fargs=(inlet, l), interval=50, blit=True)
+    line_ani = animation.FuncAnimation(fig, update_line, fargs=(inlet, l), interval=50, blit=True)
     components.html(line_ani.to_jshtml(), height=1000)
 
 def update_line(num, inlet, line):
     sample, timestamp = inlet.pull_sample()
-    x.append(num)
-    y.append(sample[0])
+    if sample is None:  # No more samples available, append a placeholder value
+        x.append(num)
+        y.append(np.nan)
+    else:
+        x.append(num)
+        y.append(sample[0])
     line.set_data(x, y)
     return line,
 
