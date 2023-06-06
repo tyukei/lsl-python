@@ -1,50 +1,41 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
-import numpy as np
+import streamlit as st
+import streamlit.components.v1 as components
 import matplotlib.pyplot as plt
-import matplotlib
-from kivy.garden.matplotlib.backend_kivy import FigureCanvas
+import matplotlib.animation as animation
+from pylsl import resolve_byprop, StreamInlet
+import numpy as np
 
-class GraphApp(App):
-    """Matplotlib のグラフを表示するアプリケーション"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.title = 'Matplotlib graph on Kivy'
+def run_app():
+    fig, ax = plt.subplots()
+    x = []
+    y = []
+    line, = ax.plot([], [], label='sin', color='red')
 
-    def build(self):
-        # メインの画面
-        main_screen = BoxLayout()
-        main_screen.orientation = 'vertical'
+    def init():
+        ax.set_xlim(0, 2*np.pi)
+        ax.set_ylim(-1, 1)
+        line.set_data([], [])
+        return line,
 
-        # 上部にラベルを追加しておく
-        label_text = 'The following is a graph of Matplotlib'
-        label = Label(text=label_text)
-        label.size_hint_y = 0.2
-        main_screen.add_widget(label)
-
-        # サイン波のデータを用意する
-        x = np.linspace(-np.pi, np.pi, 100)
-        y = np.sin(x)
-        # 描画する領域を用意する
-        fig, ax = plt.subplots()
-        # プロットする
-        ax.plot(x, y)
-        # Figure#canvas をウィジェットとして追加する
-        main_screen.add_widget(fig.canvas)
-
-        return main_screen
+    def animate(i):
+        x.append(i)
+        y.append(np.sin(i))
+        line.set_data(x, y)
+        return line,
+    ani = animation.FuncAnimation(fig, animate,init_func=init, frames=10000000, interval=40, blit=True)
+    components.html(ani.to_jshtml(), height=1000)
 
 
 def main():
-    # アプリケーションを開始する
-    app = GraphApp()
-    app.run()
-
+    st.title('XHRO LSL Viewer')
+    selected_type = st.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
+    scale = st.number_input('Scale', min_value=0, max_value=1000, step=1, value=150)
+    selected_filter = st.selectbox('Filter', ('BP1', 'BP2'))
+    ave_ref = st.checkbox('Ave Ref')
+    norm = st.checkbox('Norm.')
+    zero_mean = st.checkbox('Zero mean')
+    run_app()
 
 if __name__ == '__main__':
     main()
