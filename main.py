@@ -1,41 +1,77 @@
 import streamlit as st
-import streamlit.components.v1 as components
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from pylsl import resolve_byprop, StreamInlet
 import numpy as np
+import matplotlib.pyplot as plt
+import time
+from pylsl import resolve_byprop, StreamInlet
+
+WAIT_TIME_SECONDS = 0.04
+x, y = [], []
 
 
-def run_app():
-    fig, ax = plt.subplots()
-    x = []
-    y = []
-    line, = ax.plot([], [], label='sin', color='red')
+def setup_gui():
+    st.title('XHRO LSL Viewer')
+    selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
+    scale = st.sidebar.number_input('Scale', min_value=0, max_value=1000, step=1, value=150)
+    selected_filter = st.sidebar.selectbox('Filter', ('BP1', 'BP2'))
+    ave_ref = st.sidebar.checkbox('Ave Ref')
+    norm = st.sidebar.checkbox('Norm.')
+    ch1 = st.sidebar.checkbox('CH1')
+    ch2 = st.sidebar.checkbox('CH2')
+    ch3 = st.sidebar.checkbox('CH3')
+    ch4 = st.sidebar.checkbox('CH4')
 
-    def init():
-        ax.set_xlim(0, 2*np.pi)
-        ax.set_ylim(-1, 1)
-        line.set_data([], [])
-        return line,
+    streams = resolve_stream(selected_type)
+    setup_graph(streams)
 
-    def animate(i):
-        x.append(i)
-        y.append(np.sin(i))
-        line.set_data(x, y)
-        return line,
-    ani = animation.FuncAnimation(fig, animate,init_func=init, frames=10000000, interval=40, blit=True)
-    components.html(ani.to_jshtml(), height=1000)
+def resolve_stream(selected_type):
+    type_mapping = {
+        'ACC': 'ACC',
+        'BIOZ': 'BIOZ',
+        'EEG': 'EEG',
+        'OPT': 'OPT',
+        'TEMP': 'TEMP'
+    }
+    stream_type = type_mapping.get(selected_type, None)
+    if stream_type:
+        streams = resolve_byprop('type', stream_type, timeout=2)
+        return streams
+    else:
+        return []
+    
+def setup_graph(streams):
+    if len(streams) > 0:
+        inlet = StreamInlet(streams[0])
+        graph = st.empty()
+        fig, ax = plt.subplots()
+        i = 0
+        while True:
+            update(i, graph, inlet, fig, ax)
+            i += 1
+
+
+# アニメーションのフレーム更新関数
+def update(i, graph, inlet, fig, ax):
+    sample, timestamp = inlet.pull_sample()
+    x.append(i*0.04)
+    y.append(sample[0])
+
+    if x[-1] > 10:
+        del x[0]
+        del y[0]
+
+    if i % 25 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        graph.pyplot(fig)
+
+    
+    time.sleep(WAIT_TIME_SECONDS)
+
 
 
 def main():
-    st.title('XHRO LSL Viewer')
-    selected_type = st.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
-    scale = st.number_input('Scale', min_value=0, max_value=1000, step=1, value=150)
-    selected_filter = st.selectbox('Filter', ('BP1', 'BP2'))
-    ave_ref = st.checkbox('Ave Ref')
-    norm = st.checkbox('Norm.')
-    zero_mean = st.checkbox('Zero mean')
-    run_app()
+    setup_gui()
 
 if __name__ == '__main__':
     main()

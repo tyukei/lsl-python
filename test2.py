@@ -15,6 +15,10 @@ def setup_gui():
     selected_filter = st.sidebar.selectbox('Filter', ('BP1', 'BP2'))
     ave_ref = st.sidebar.checkbox('Ave Ref')
     norm = st.sidebar.checkbox('Norm.')
+    ch1 = st.sidebar.checkbox('CH1')
+    ch2 = st.sidebar.checkbox('CH2')
+    ch3 = st.sidebar.checkbox('CH3')
+    ch4 = st.sidebar.checkbox('CH4')
 
 def setup_graph():
     streams = resolve_byprop('type', 'ACC', timeout=2)
