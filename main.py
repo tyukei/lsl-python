@@ -5,7 +5,7 @@ import time
 from pylsl import resolve_byprop, StreamInlet
 
 WAIT_TIME_SECONDS = 0.04
-x, y = [], []
+x, y, y1 = [], [], []
 
 
 def setup_gui():
@@ -42,27 +42,32 @@ def setup_graph(streams):
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
         graph = st.empty()
-        fig, ax = plt.subplots()
+        fig, (ax,ax1) = plt.subplots(nrows=2,sharex=True)
         i = 0
         while True:
-            update(i, graph, inlet, fig, ax)
+            update(i, graph, inlet, fig, ax, ax1)
             i += 1
 
 
 # アニメーションのフレーム更新関数
-def update(i, graph, inlet, fig, ax):
+def update(i, graph, inlet, fig, ax, ax1):
     sample, timestamp = inlet.pull_sample()
     x.append(i*0.04)
     y.append(sample[0])
+    y1.append(sample[1])
 
     if x[-1] > 10:
         del x[0]
         del y[0]
+        del y1[0]
 
     if i % 25 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
         ax.plot(x, y)
+        ax1.cla()
+        ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.plot(x, y1)
         graph.pyplot(fig)
 
     
