@@ -20,13 +20,14 @@ def setup_graph():
     streams = resolve_byprop('type', 'ACC', timeout=2)
     inlet = StreamInlet(streams[0])
     graph = st.empty()
+    fig, ax = plt.subplots()
     i = 0
     while True:
-        update(i, graph, inlet)
+        update(i, graph, inlet, fig, ax)
         i += 1
 
 # アニメーションのフレーム更新関数
-def update(i, graph, inlet):
+def update(i, graph, inlet, fig, ax):
     sample, timestamp = inlet.pull_sample()
     x.append(i*0.04)
     y.append(sample[0])
@@ -34,13 +35,13 @@ def update(i, graph, inlet):
     if x[-1] > 10:
         del x[0]
         del y[0]
-    # グラフ描画
-    fig, ax = plt.subplots()
-    ax.set_xlim(x[-1]-10, x[-1])
-    ax.plot(x, y)
 
-    # グラフを表示
-    graph.pyplot(fig)
+    if i % 25 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        graph.pyplot(fig)
+
     
     # 一時停止
     time.sleep(WAIT_TIME_SECONDS)
