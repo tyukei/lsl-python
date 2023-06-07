@@ -5,7 +5,7 @@ import time
 from pylsl import resolve_byprop, StreamInlet
 
 wait_time = 0.04
-x, y, y1 = [], [], []
+x, y, y1, y2, y3 = [], [], [], [], []
 
 
 def setup_gui():
@@ -15,13 +15,8 @@ def setup_gui():
     selected_filter = st.sidebar.selectbox('Filter', ('BP1', 'BP2'))
     ave_ref = st.sidebar.checkbox('Ave Ref')
     norm = st.sidebar.checkbox('Norm.')
-    ch1 = st.sidebar.checkbox('CH1')
-    ch2 = st.sidebar.checkbox('CH2')
-    ch3 = st.sidebar.checkbox('CH3')
-    ch4 = st.sidebar.checkbox('CH4')
-
     streams = resolve_stream(selected_type)
-    setup_graph(streams)
+
 
 def resolve_stream(selected_type):
     global wait_time
@@ -34,12 +29,17 @@ def resolve_stream(selected_type):
     }
     stream_type,stream_time = type_mapping.get(selected_type, None)
     if stream_type:
-        streams = resolve_byprop('type', stream_type, timeout=2)
-        if stream_time:
-            wait_time = stream_time       
-        return streams
-    else:
-        return []
+        wait_time = stream_time
+        if stream_type == 'ACC':
+            setup_accgraph()
+        elif stream_type == 'BIOZ':
+            setup_biozgraph()
+        elif stream_type == 'EEG':
+            setup_eeggraph()
+        elif stream_type == 'OPT':
+            setup_optgraph()
+        elif stream_type == 'TEMP':
+            setup_tempgraph()
     
 def setup_graph(streams):
     if len(streams) > 0:
@@ -51,6 +51,56 @@ def setup_graph(streams):
             update(i, graph, inlet, fig, ax, ax1)
             i += 1
 
+def setup_accgraph():
+    streams = resolve_byprop('type', 'ACC', timeout=2)
+    if len(streams) > 0:
+        inlet = StreamInlet(streams[0])
+        graph = st.empty()
+        fig, (ax,ax1,ax2) = plt.subplots(nrows=3,sharex=True)
+        i = 0
+        while True:
+            update_acc(i, graph, inlet, fig, ax, ax1, ax2)
+            i += 1
+def setup_eeggraph():
+    streams = resolve_byprop('type', 'EEG', timeout=2)
+    if len(streams) > 0:
+        inlet = StreamInlet(streams[0])
+        graph = st.empty()
+        fig, (ax,ax1) = plt.subplots(nrows=2,sharex=True)
+        i = 0
+        while True:
+            update_eeg(i, graph, inlet, fig, ax, ax1)
+            i += 1
+def setup_biozgraph():
+    streams = resolve_byprop('type', 'BIOZ', timeout=2)
+    if len(streams) > 0:
+        inlet = StreamInlet(streams[0])
+        graph = st.empty()
+        fig, (ax,ax1) = plt.subplots(nrows=2,sharex=True)
+        i = 0
+        while True:
+            update_bioz(i, graph, inlet, fig, ax, ax1)
+            i += 1
+def setup_optgraph():
+    streams = resolve_byprop('type', 'OPT', timeout=2)
+    if len(streams) > 0:
+        inlet = StreamInlet(streams[0])
+        graph = st.empty()
+        fig, (ax,ax1,ax2,ax3) = plt.subplots(nrows=4,sharex=True)
+        i = 0
+        while True:
+            update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3)
+            i += 1
+def setup_tempgraph():
+    streams = resolve_byprop('type', 'TEMP', timeout=2)
+    if len(streams) > 0:
+        inlet = StreamInlet(streams[0])
+        graph = st.empty()
+        fig, (ax) = plt.subplots(nrows=1,sharex=True)
+        i = 0
+        while True:
+            update_temp(i, graph, inlet, fig, ax)
+            i += 1
 
 # アニメーションのフレーム更新関数
 def update(i, graph, inlet, fig, ax, ax1):
@@ -79,7 +129,123 @@ def update(i, graph, inlet, fig, ax, ax1):
     
     time.sleep(wait_time)
 
+def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
+    sample, timestamp = inlet.pull_sample()
+    x.append(i*wait_time)
+    y.append(sample[0])
+    y1.append(sample[1])
+    y2.append(sample[2])
 
+    if x[-1] > 10:
+        del x[0]
+        del y[0]
+        del y1[0]
+        del y2[0]
+
+    if x[-1] % 1 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        ax1.cla()
+        ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.plot(x, y1)
+        ax2.cla()
+        ax2.set_xlim(x[-1]-10, x[-1])
+        ax2.plot(x, y2)
+        graph.pyplot(fig)
+    
+    time.sleep(wait_time)
+
+def update_eeg(i, graph, inlet, fig, ax, ax1):
+    sample, timestamp = inlet.pull_sample()
+    x.append(i*wait_time)
+    y.append(sample[0])
+    y1.append(sample[1])
+
+    if x[-1] > 10:
+        del x[0]
+        del y[0]
+        del y1[0]
+
+    if x[-1] % 1 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        ax1.cla()
+        ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.plot(x, y1)
+        graph.pyplot(fig)
+    
+    time.sleep(wait_time)
+def update_bioz(i, graph, inlet, fig, ax, ax1):
+    sample, timestamp = inlet.pull_sample()
+    x.append(i*wait_time)
+    y.append(sample[0])
+    y1.append(sample[1])
+
+    if x[-1] > 10:
+        del x[0]
+        del y[0]
+        del y1[0]
+
+    if x[-1] % 1 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        ax1.cla()
+        ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.plot(x, y1)
+        graph.pyplot(fig)
+    
+    time.sleep(wait_time)
+def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
+    sample, timestamp = inlet.pull_sample()
+    x.append(i*wait_time)
+    y.append(sample[0])
+    y1.append(sample[1])
+    y2.append(sample[2])
+    y3.append(sample[3])
+
+    if x[-1] > 10:
+        del x[0]
+        del y[0]
+        del y1[0]
+        del y2[0]
+        del y3[0]
+
+    if x[-1] % 1 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        ax1.cla()
+        ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.plot(x, y1)
+        ax2.cla()
+        ax2.set_xlim(x[-1]-10, x[-1])
+        ax2.plot(x, y2)
+        ax3.cla()
+        ax3.set_xlim(x[-1]-10, x[-1])
+        ax3.plot(x, y3)
+        graph.pyplot(fig)
+    
+    time.sleep(wait_time)
+
+def update_temp(i, graph, inlet, fig, ax):
+    sample, timestamp = inlet.pull_sample()
+    x.append(i*wait_time)
+    y.append(sample[0])
+
+    if x[-1] > 10:
+        del x[0]
+        del y[0]
+
+    if x[-1] % 1 == 0:
+        ax.cla()
+        ax.set_xlim(x[-1]-10, x[-1])
+        ax.plot(x, y)
+        graph.pyplot(fig)
+    
+    time.sleep(wait_time)
 
 def main():
     setup_gui()
