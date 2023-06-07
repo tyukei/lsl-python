@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 from pylsl import resolve_byprop, StreamInlet
+import math
 
 wait_time = 0.04
 x, y, y1, y2, y3 = [], [], [], [], []
@@ -12,7 +13,7 @@ def setup_gui():
     st.title('XHRO LSL Viewer')
     selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
     scale = st.sidebar.number_input('Scale', min_value=0, max_value=1000, step=1, value=150)
-    selected_filter = st.sidebar.selectbox('Filter', ('BP1', 'BP2'))
+    selected_filter = st.sidebar.selectbox('filter', ('Nofilter','BP2-30Hz', 'BP2-45Hz','BP5-45Hz','BP15-45Hz','BP7-13Hz'))
     ave_ref = st.sidebar.checkbox('Ave Ref')
     norm = st.sidebar.checkbox('Norm.')
     streams = resolve_stream(selected_type)
@@ -41,6 +42,28 @@ def resolve_stream(selected_type):
         elif stream_type == 'TEMP':
             setup_tempgraph()
     
+def convert_acc(y):
+    converted = y * 6.1035 * 10**-2
+    converted = math.floor(converted * 100) / 100
+    return converted
+def convert_bioz(y):
+    converted = y * 180 // math.pi
+    converted = math.floor(converted * 100) / 100
+    return converted
+def convert_eeg(y):
+    converted = y * ((2*4.5 // 24) // 0x1000000) * 1000 * 1000
+    converted = math.floor(converted * 100) / 100
+    return converted
+def convert_opt(y):
+    y = math.floor(y * 100) / 100
+    return y
+def convert_temp(y):
+    converted = y
+    converted = math.floor(converted * 100) / 100
+    return converted
+
+
+
 def setup_graph(streams):
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
@@ -56,7 +79,12 @@ def setup_accgraph():
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
         graph = st.empty()
-        fig, (ax,ax1,ax2) = plt.subplots(nrows=3,sharex=True)
+        fig, (ax2,ax1,ax) = plt.subplots(nrows=3,sharex=True)
+        ax2.spines['bottom'].set_visible(False)
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['bottom'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        plt.subplots_adjust(hspace=0)
         i = 0
         while True:
             update_acc(i, graph, inlet, fig, ax, ax1, ax2)
@@ -66,7 +94,10 @@ def setup_eeggraph():
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
         graph = st.empty()
-        fig, (ax,ax1) = plt.subplots(nrows=2,sharex=True)
+        fig, (ax1,ax) = plt.subplots(nrows=2,sharex=True)
+        ax1.spines['bottom'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        plt.subplots_adjust(hspace=0)
         i = 0
         while True:
             update_eeg(i, graph, inlet, fig, ax, ax1)
@@ -76,7 +107,10 @@ def setup_biozgraph():
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
         graph = st.empty()
-        fig, (ax,ax1) = plt.subplots(nrows=2,sharex=True)
+        fig, (ax1,ax) = plt.subplots(nrows=2,sharex=True)
+        ax1.spines['bottom'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        plt.subplots_adjust(hspace=0)
         i = 0
         while True:
             update_bioz(i, graph, inlet, fig, ax, ax1)
@@ -86,7 +120,14 @@ def setup_optgraph():
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
         graph = st.empty()
-        fig, (ax,ax1,ax2,ax3) = plt.subplots(nrows=4,sharex=True)
+        fig, (ax3,ax2,ax1,ax) = plt.subplots(nrows=4,sharex=True)
+        ax3.spines['bottom'].set_visible(False)
+        ax2.spines['top'].set_visible(False)
+        ax2.spines['bottom'].set_visible(False)
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['bottom'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        plt.subplots_adjust(hspace=0)
         i = 0
         while True:
             update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3)
@@ -132,9 +173,9 @@ def update(i, graph, inlet, fig, ax, ax1):
 def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(sample[0])
-    y1.append(sample[1])
-    y2.append(sample[2])
+    y.append(convert_acc(sample[0]))
+    y1.append(convert_acc(sample[1]))
+    y2.append(convert_acc(sample[2]))
 
     if x[-1] > 10:
         del x[0]
@@ -155,12 +196,11 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
         graph.pyplot(fig)
     
     time.sleep(wait_time)
-
 def update_eeg(i, graph, inlet, fig, ax, ax1):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(sample[0])
-    y1.append(sample[1])
+    y.append(convert_eeg(sample[0]))
+    y1.append(convert_eeg(sample[1]))
 
     if x[-1] > 10:
         del x[0]
@@ -180,8 +220,8 @@ def update_eeg(i, graph, inlet, fig, ax, ax1):
 def update_bioz(i, graph, inlet, fig, ax, ax1):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(sample[0])
-    y1.append(sample[1])
+    y.append(convert_bioz(sample[0]))
+    y1.append(convert_bioz(sample[1]))
 
     if x[-1] > 10:
         del x[0]
@@ -201,10 +241,10 @@ def update_bioz(i, graph, inlet, fig, ax, ax1):
 def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(sample[0])
-    y1.append(sample[1])
-    y2.append(sample[2])
-    y3.append(sample[3])
+    y.append(convert_opt(sample[0]))
+    y1.append(convert_opt(sample[1]))
+    y2.append(convert_opt(sample[2]))
+    y3.append(convert_opt(sample[3]))
 
     if x[-1] > 10:
         del x[0]
@@ -229,11 +269,10 @@ def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
         graph.pyplot(fig)
     
     time.sleep(wait_time)
-
 def update_temp(i, graph, inlet, fig, ax):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(sample[0])
+    y.append(convert_temp(sample[0]))
 
     if x[-1] > 10:
         del x[0]
