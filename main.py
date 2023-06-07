@@ -215,9 +215,11 @@ def update_eeg(i, graph, inlet, fig, ax, ax1):
     if x[-1] % 1 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
+        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
         ax.plot(x, y)
         ax1.cla()
         ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
         ax1.plot(x, y1)
         graph.pyplot(fig)
     
@@ -236,9 +238,11 @@ def update_bioz(i, graph, inlet, fig, ax, ax1):
     if x[-1] % 1 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
+        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
         ax.plot(x, y)
         ax1.cla()
         ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
         ax1.plot(x, y1)
         graph.pyplot(fig)
     
@@ -261,15 +265,19 @@ def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
     if x[-1] % 1 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
+        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
         ax.plot(x, y)
         ax1.cla()
         ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
         ax1.plot(x, y1)
         ax2.cla()
         ax2.set_xlim(x[-1]-10, x[-1])
+        ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
         ax2.plot(x, y2)
         ax3.cla()
         ax3.set_xlim(x[-1]-10, x[-1])
+        ax3.set_ylim(np.mean(y3) - scale/2, np.mean(y3) + scale/2)
         ax3.plot(x, y3)
         graph.pyplot(fig)
     
@@ -286,6 +294,7 @@ def update_temp(i, graph, inlet, fig, ax):
     if x[-1] % 1 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
+        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
         ax.plot(x, y)
         graph.pyplot(fig)
     
