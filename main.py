@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 from pylsl import resolve_byprop, StreamInlet
 
-WAIT_TIME_SECONDS = 0.04
+wait_time = 0.04
 x, y, y1 = [], [], []
 
 
@@ -24,16 +24,19 @@ def setup_gui():
     setup_graph(streams)
 
 def resolve_stream(selected_type):
+    global wait_time
     type_mapping = {
-        'ACC': 'ACC',
-        'BIOZ': 'BIOZ',
-        'EEG': 'EEG',
-        'OPT': 'OPT',
-        'TEMP': 'TEMP'
+        'ACC': ('ACC',0.04),
+        'BIOZ': ('BIOZ',0.16),
+        'EEG': ('EEG',0.004),
+        'OPT': ('OPT',0.02),
+        'TEMP': ('TEMP',1)
     }
-    stream_type = type_mapping.get(selected_type, None)
+    stream_type,stream_time = type_mapping.get(selected_type, None)
     if stream_type:
         streams = resolve_byprop('type', stream_type, timeout=2)
+        if stream_time:
+            wait_time = stream_time       
         return streams
     else:
         return []
@@ -52,26 +55,29 @@ def setup_graph(streams):
 # アニメーションのフレーム更新関数
 def update(i, graph, inlet, fig, ax, ax1):
     sample, timestamp = inlet.pull_sample()
-    x.append(i*0.04)
+    x.append(i*wait_time)
     y.append(sample[0])
-    y1.append(sample[1])
+    if len(sample) > 1:
+        y1.append(sample[1])
 
     if x[-1] > 10:
         del x[0]
         del y[0]
-        del y1[0]
+        if len(sample) > 1:
+            del y1[0]
 
-    if i % 25 == 0:
+    if x[-1] % 1 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
         ax.plot(x, y)
-        ax1.cla()
-        ax1.set_xlim(x[-1]-10, x[-1])
-        ax1.plot(x, y1)
+        if len(sample) > 1:
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ax1.plot(x, y1)
         graph.pyplot(fig)
 
     
-    time.sleep(WAIT_TIME_SECONDS)
+    time.sleep(wait_time)
 
 
 
