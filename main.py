@@ -6,13 +6,15 @@ from pylsl import resolve_byprop, StreamInlet
 import math
 
 wait_time = 0.04
+scale = 150
 x, y, y1, y2, y3 = [], [], [], [], []
 
 
 def setup_gui():
+    global scale
     st.title('XHRO LSL Viewer')
     selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
-    scale = st.sidebar.number_input('Scale', min_value=0, max_value=1000, step=1, value=150)
+    scale = st.sidebar.number_input('Scale', min_value=0, max_value=15000, step=1, value=150)
     selected_filter = st.sidebar.selectbox('filter', ('Nofilter','BP2-30Hz', 'BP2-45Hz','BP5-45Hz','BP15-45Hz','BP7-13Hz'))
     ave_ref = st.sidebar.checkbox('Ave Ref')
     norm = st.sidebar.checkbox('Norm.')
@@ -23,7 +25,7 @@ def resolve_stream(selected_type):
     global wait_time
     type_mapping = {
         'ACC': ('ACC',0.04),
-        'BIOZ': ('BIOZ',0.16),
+        'BIOZ': ('BIOZ',60),
         'EEG': ('EEG',0.004),
         'OPT': ('OPT',0.02),
         'TEMP': ('TEMP',1)
@@ -186,12 +188,15 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
     if x[-1] % 1 == 0:
         ax.cla()
         ax.set_xlim(x[-1]-10, x[-1])
+        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
         ax.plot(x, y)
         ax1.cla()
         ax1.set_xlim(x[-1]-10, x[-1])
+        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
         ax1.plot(x, y1)
         ax2.cla()
         ax2.set_xlim(x[-1]-10, x[-1])
+        ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
         ax2.plot(x, y2)
         graph.pyplot(fig)
     
