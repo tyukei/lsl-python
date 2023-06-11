@@ -70,12 +70,16 @@ def convert_temp(y):
 
 def normalzie_data(ys):
     # X_norm = (X - X.min()) / (X.max() - X.min())
+    if min(ys) == max(ys):
+        for i in range(len(ys)):
+            ys[i] = 0
+        return ys
+
     temp = []
     for y in ys:
         y = (y - min(ys)) / (max(ys) - min(ys))
         temp.append(y)
     return temp
-
 
 def setup_graph(streams):
     if len(streams) > 0:
@@ -221,7 +225,6 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
     converty = convert_acc(sample[0])
     converty1 = convert_acc(sample[1])
     converty2 = convert_acc(sample[2])
-    ys = []
     if norm == True:
         ys = normalzie_data([converty, converty1, converty2])
     else:
@@ -267,9 +270,16 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
 def update_eeg(i, graph, inlet, fig, ax, ax1, ax2):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(convert_eeg(sample[0]))
-    y1.append(convert_eeg(sample[1]))
-    y2.append(convert_eeg(sample[0]) - convert_eeg(sample[1]))
+    converty = convert_eeg(sample[0])
+    converty1 = convert_eeg(sample[1])
+    if norm == True:
+        ys = normalzie_data([converty, converty1])
+    else:
+        ys = [converty, converty1]
+    y.append(ys[0])
+    y1.append(ys[1])
+    y2.append(convert_eeg(ys[0]-ys[1]))
+    print (ys)
 
     if x[-1] > 10:
         del x[0]
@@ -308,8 +318,15 @@ def update_eeg(i, graph, inlet, fig, ax, ax1, ax2):
 def update_bioz(i, graph, inlet, fig, ax, ax1):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(convert_bioz(sample[0]))
-    y1.append(convert_bioz(sample[1]))
+    converty = convert_bioz(sample[0])
+    converty1 = convert_bioz(sample[1])
+    if norm == True:
+        ys = normalzie_data([converty, converty1])
+    else:
+        ys = [converty,converty1]
+    y.append(ys[0])
+    y1.append(ys[1])
+    print(ys)
 
     if x[-1] > 10:
         del x[0]
@@ -339,10 +356,19 @@ def update_bioz(i, graph, inlet, fig, ax, ax1):
 def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(convert_opt(sample[0]))
-    y1.append(convert_opt(sample[1]))
-    y2.append(convert_opt(sample[2]))
-    y3.append(convert_opt(sample[3]))
+    converty = convert_opt(sample[0])
+    converty1 = convert_opt(sample[1])
+    converty2 = convert_opt(sample[2])
+    converty3 = convert_opt(sample[3])
+    if norm == True:
+        ys = normalzie_data([converty, converty1, converty2, converty3])
+    else:
+        ys = [converty, converty1, converty2, converty3]
+    y.append(ys[0])
+    y1.append(ys[1])
+    y2.append(ys[2])
+    y3.append(ys[3])
+    print(ys)
 
     if x[-1] > 10:
         del x[0]
@@ -390,7 +416,11 @@ def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
 def update_temp(i, graph, inlet, fig, ax):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(convert_temp(sample[0]))
+    if norm == True:
+        y.append(0)
+    else:
+        y.append(sample[0])
+    print(sample[0])
 
     if x[-1] > 10:
         del x[0]
