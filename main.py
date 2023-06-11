@@ -8,10 +8,11 @@ import math
 wait_time = 0.04
 scale = 150
 x, y, y1, y2, y3 = [], [], [], [], []
+norm = False
 
 
 def setup_gui():
-    global scale
+    global scale, norm
     st.title('XHRO Viewer')
     header = st.header('')
     selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
@@ -66,6 +67,15 @@ def convert_temp(y):
     converted = y
     converted = math.floor(converted * 1000) / 1000
     return converted
+
+def normalzie_data(ys):
+    # X_norm = (X - X.min()) / (X.max() - X.min())
+    temp = []
+    for y in ys:
+        y = (y - min(ys)) / (max(ys) - min(ys))
+        temp.append(y)
+    return temp
+
 
 def setup_graph(streams):
     if len(streams) > 0:
@@ -208,11 +218,18 @@ def update(i, graph, inlet, fig, ax, ax1):
 def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
-    y.append(convert_acc(sample[0]))
-    y1.append(convert_acc(sample[1]))
-    y2.append(convert_acc(sample[2]))
-    print (sample[0], sample[1], sample[2])
-    print (convert_acc(sample[0]), convert_acc(sample[1]), convert_acc(sample[2]))
+    converty = convert_acc(sample[0])
+    converty1 = convert_acc(sample[1])
+    converty2 = convert_acc(sample[2])
+    ys = []
+    if norm == True:
+        ys = normalzie_data([converty, converty1, converty2])
+    else:
+        ys = [converty, converty1, converty2]
+    y.append(ys[0])
+    y1.append(ys[1])
+    y2.append(ys[2])
+    print (ys)
     if x[-1] > 10:
         del x[0]
         del y[0]
