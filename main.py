@@ -13,6 +13,7 @@ x, y, y1, y2, y3 = [], [], [], [], []
 def setup_gui():
     global scale
     st.title('XHRO Viewer')
+    header = st.header('')
     selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
     scale = st.sidebar.number_input('Scale', min_value=0, max_value=15000, step=1, value=150)
     selected_filter = st.sidebar.selectbox('filter', ('Nofilter','BP2-30Hz', 'BP2-45Hz','BP5-45Hz','BP15-45Hz','BP7-13Hz'))
@@ -44,15 +45,18 @@ def resolve_stream(selected_type):
             setup_tempgraph()
     
 def convert_acc(y):
-    converted = y * 6.1035 * 10**-2
+    # converted = y * 6.1035 * 10**-2
+    converted = y
     converted = math.floor(converted * 100) / 100
     return converted
 def convert_bioz(y):
-    converted = y * 180 // math.pi
+    # converted = y * 180 // math.pi
+    converted = y
     converted = math.floor(converted * 100) / 100
     return converted
 def convert_eeg(y):
-    converted = y * ((2*4.5 // 24) // 0x1000000) * 1000 * 1000
+    # converted = y * ((2*4.5 // 24) // 0x1000000) * 1000 * 1000
+    converted = y
     converted = math.floor(converted * 100) / 100
     return converted
 def convert_opt(y):
@@ -88,6 +92,12 @@ def setup_accgraph():
         while True:
             update_acc(i, graph, inlet, fig, ax, ax1, ax2)
             i += 1
+    else:
+        print(len(streams))
+        header = st.header('No stream found')
+        time.sleep(1)
+        header.empty()
+        setup_accgraph()
 def setup_eeggraph():
     streams = resolve_byprop('type', 'EEG', timeout=2)
     if len(streams) > 0:
@@ -103,6 +113,12 @@ def setup_eeggraph():
         while True:
             update_eeg(i, graph, inlet, fig, ax, ax1,ax2)
             i += 1
+    else:
+        print(len(streams))
+        header = st.header('No stream found')
+        time.sleep(1)
+        header.empty()
+        setup_accgraph()
 def setup_biozgraph():
     streams = resolve_byprop('type', 'BIOZ', timeout=2)
     if len(streams) > 0:
@@ -116,6 +132,12 @@ def setup_biozgraph():
         while True:
             update_bioz(i, graph, inlet, fig, ax, ax1)
             i += 1
+    else:
+        print(len(streams))
+        header = st.header('No stream found')
+        time.sleep(1)
+        header.empty()
+        setup_accgraph()
 def setup_optgraph():
     streams = resolve_byprop('type', 'OPT', timeout=2)
     if len(streams) > 0:
@@ -133,6 +155,12 @@ def setup_optgraph():
         while True:
             update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3)
             i += 1
+    else:
+        print(len(streams))
+        header = st.header('No stream found')
+        time.sleep(1)
+        header.empty()
+        setup_accgraph()
 def setup_tempgraph():
     streams = resolve_byprop('type', 'TEMP', timeout=2)
     if len(streams) > 0:
@@ -143,6 +171,12 @@ def setup_tempgraph():
         while True:
             update_temp(i, graph, inlet, fig, ax)
             i += 1
+    else:
+        print(len(streams))
+        header = st.header('No stream found')
+        time.sleep(1)
+        header.empty()
+        setup_accgraph()
 
 # アニメーションのフレーム更新関数
 def update(i, graph, inlet, fig, ax, ax1):
