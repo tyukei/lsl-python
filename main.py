@@ -93,13 +93,15 @@ def setup_eeggraph():
     if len(streams) > 0:
         inlet = StreamInlet(streams[0])
         graph = st.empty()
-        fig, (ax1,ax) = plt.subplots(nrows=2,sharex=True)
+        fig, (ax2,ax1,ax) = plt.subplots(nrows=3,sharex=True)
+        ax2.spines['bottom'].set_visible(False)
+        ax1.spines['top'].set_visible(False)
         ax1.spines['bottom'].set_visible(False)
         ax.spines['top'].set_visible(False)
         plt.subplots_adjust(hspace=0)
         i = 0
         while True:
-            update_eeg(i, graph, inlet, fig, ax, ax1)
+            update_eeg(i, graph, inlet, fig, ax, ax1,ax2)
             i += 1
 def setup_biozgraph():
     streams = resolve_byprop('type', 'BIOZ', timeout=2)
@@ -211,16 +213,18 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
         graph.pyplot(fig)
     
     time.sleep(wait_time)
-def update_eeg(i, graph, inlet, fig, ax, ax1):
+def update_eeg(i, graph, inlet, fig, ax, ax1, ax2):
     sample, timestamp = inlet.pull_sample()
     x.append(i*wait_time)
     y.append(convert_eeg(sample[0]))
     y1.append(convert_eeg(sample[1]))
+    y2.append(convert_eeg(sample[0]) - convert_eeg(sample[1]))
 
     if x[-1] > 10:
         del x[0]
         del y[0]
         del y1[0]
+        del y2[0]
 
     if x[-1] % 1 == 0:
         ax.cla()
@@ -239,6 +243,14 @@ def update_eeg(i, graph, inlet, fig, ax, ax1):
         ax1.yaxis.tick_right()
         ax1.set_ylabel('ch2')
         ax1.plot(x, y1)
+        ax2.cla()
+        ax2.set_xlim(x[-1]-10, x[-1])
+        ticks_positions = [np.mean(y2)]
+        ax2.set_yticks(ticks_positions)
+        ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
+        ax2.yaxis.tick_right()
+        ax2.set_ylabel('ch1 - ch2')
+        ax2.plot(x, y2)      
         graph.pyplot(fig)
     
     time.sleep(wait_time)
