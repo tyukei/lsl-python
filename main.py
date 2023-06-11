@@ -175,7 +175,8 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
     y.append(convert_acc(sample[0]))
     y1.append(convert_acc(sample[1]))
     y2.append(convert_acc(sample[2]))
-
+    print (sample[0], sample[1], sample[2])
+    print (convert_acc(sample[0]), convert_acc(sample[1]), convert_acc(sample[2]))
     if x[-1] > 10:
         del x[0]
         del y[0]
