@@ -1,3 +1,4 @@
+from scipy import signal
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,10 +10,11 @@ wait_time = 0.04
 scale = 150
 x, y, y1, y2, y3 = [], [], [], [], []
 norm = False
+selected_filter = 'Nofilter'
 
 
 def setup_gui():
-    global scale, norm
+    global scale, norm, selected_filter
     st.title('XHRO Viewer')
     header = st.header('')
     selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
@@ -80,6 +82,38 @@ def normalzie_data(ys):
         y = (y - min(ys)) / (max(ys) - min(ys))
         temp.append(y)
     return temp
+
+def time_to_frequency(time_domain):
+    N = len(time_domain)
+    dt = wait_time
+    # フーリエ変換を実行
+    frequency_domain = np.fft.fft(time_domain)
+    # 周波数軸を生成
+    frequencies = np.fft.fftfreq(N, dt)
+
+    # バンドパスフィルタを適用したい周波数帯域を指定
+    f_min, f_max = get_filter(selected_filter)
+
+    # バンドパスフィルタを適用
+    for i, freq in enumerate(frequencies):
+        if freq < f_min or freq > f_max:
+            frequency_domain[i] = 0
+
+    # 逆フーリエ変換して時間領域に戻す
+    filtered_time_domain = np.fft.ifft(frequency_domain)
+    return filtered_time_domain
+
+
+def get_filter(selected_filter):
+    strem_filter = {
+        'Nofilter': (None,None),
+        'BP2-30Hz': (2,30),
+        'BP2-45Hz': (2,45),
+        'BP5-45Hz': (5,45),
+        'BP15-45Hz': (15,45),
+        'BP7-13Hz': (7,13)
+    }
+    return strem_filter.get(selected_filter, None)
 
 def setup_graph(streams):
     if len(streams) > 0:
@@ -220,7 +254,7 @@ def update(i, graph, inlet, fig, ax, ax1):
     time.sleep(wait_time)
 
 def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
-    sample, timestamp = inlet.pull_sample()
+    sample, timestamp = inlet.pull_sample()    
     x.append(i*wait_time)
     converty = convert_acc(sample[0])
     converty1 = convert_acc(sample[1])
@@ -229,10 +263,12 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
         ys = normalzie_data([converty, converty1, converty2])
     else:
         ys = [converty, converty1, converty2]
+    
     y.append(ys[0])
     y1.append(ys[1])
     y2.append(ys[2])
-    print (ys)
+    # print (ys)
+
     if x[-1] > 10:
         del x[0]
         del y[0]
@@ -240,31 +276,46 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
         del y2[0]
 
     if x[-1] % 1 == 0:
-        ax.cla()
-        ax.set_xlim(x[-1]-10, x[-1])
-        tick_positions = [np.mean(y)]
-        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
-        ax.set_yticks(tick_positions)
-        ax.yaxis.tick_right()
-        ax.set_ylabel('ch1')
-        ax.plot(x, y)
-        ax1.cla()
-        ax1.set_xlim(x[-1]-10, x[-1])
-        tick_positions = [np.mean(y1)]
-        ax1.set_yticks(tick_positions)
-        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
-        ax1.yaxis.tick_right()
-        ax1.set_ylabel('ch2')
-        ax1.plot(x, y1)
-        ax2.cla()
-        ax2.set_xlim(x[-1]-10, x[-1])
-        tick_positions = [np.mean(y2)]
-        ax2.set_yticks(tick_positions)
-        ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
-        ax2.yaxis.tick_right()
-        ax2.set_ylabel('ch3')
-        ax2.plot(x, y2)
-        graph.pyplot(fig)
+        if not selected_filter == 'Nofilter':
+            freq = time_to_frequency(y)
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ax.plot(x, freq)
+            freq1 = time_to_frequency(y1)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ax1.plot(x, freq1)
+            freq2 = time_to_frequency(y2)
+            ax2.cla()
+            ax2.set_xlim(x[-1]-10, x[-1])
+            ax2.plot(x, freq2)
+            graph.pyplot(fig)
+        else:
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            tick_positions = [np.mean(y)]
+            ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
+            ax.set_yticks(tick_positions)
+            ax.yaxis.tick_right()
+            ax.set_ylabel('ch1')
+            ax.plot(x, y)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            tick_positions = [np.mean(y1)]
+            ax1.set_yticks(tick_positions)
+            ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
+            ax1.yaxis.tick_right()
+            ax1.set_ylabel('ch2')
+            ax1.plot(x, y1)
+            ax2.cla()
+            ax2.set_xlim(x[-1]-10, x[-1])
+            tick_positions = [np.mean(y2)]
+            ax2.set_yticks(tick_positions)
+            ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
+            ax2.yaxis.tick_right()
+            ax2.set_ylabel('ch3')
+            ax2.plot(x, y2)
+            graph.pyplot(fig)
     
     time.sleep(wait_time)
 def update_eeg(i, graph, inlet, fig, ax, ax1, ax2):
