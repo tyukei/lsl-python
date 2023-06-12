@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import time
 from pylsl import resolve_byprop, StreamInlet
 import math
+import time
 
 wait_time = 0.04
 scale = 150
@@ -270,8 +271,9 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
         del y[0]
         del y1[0]
         del y2[0]
-
+    
     if x[-1] % 1 == 0:
+        start = time.time()
         if not selected_filter == 'Nofilter':
             freq = time_to_frequency(y)
             ax.cla()
@@ -312,7 +314,8 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
             ax2.set_ylabel('ch3')
             ax2.plot(x, y2)
             graph.pyplot(fig)
-    
+        print(time.time() - start)
+
     time.sleep(wait_time)
 def update_eeg(i, graph, inlet, fig, ax, ax1, ax2):
     sample, timestamp = inlet.pull_sample()
