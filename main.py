@@ -335,31 +335,45 @@ def update_eeg(i, graph, inlet, fig, ax, ax1, ax2):
         del y2[0]
 
     if x[-1] % 1 == 0:
-        ax.cla()
-        ax.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y)]
-        ax.set_yticks(ticks_positions)
-        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
-        ax.yaxis.tick_right()
-        ax.set_ylabel('ch1')
-        ax.plot(x, y)
-        ax1.cla()
-        ax1.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y1)]
-        ax1.set_yticks(ticks_positions)
-        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
-        ax1.yaxis.tick_right()
-        ax1.set_ylabel('ch2')
-        ax1.plot(x, y1)
-        ax2.cla()
-        ax2.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y2)]
-        ax2.set_yticks(ticks_positions)
-        ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
-        ax2.yaxis.tick_right()
-        ax2.set_ylabel('ch1 - ch2')
-        ax2.plot(x, y2)      
-        graph.pyplot(fig)
+        if not selected_filter == 'Nofilter':
+            freq = time_to_frequency(y)
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ax.plot(x, freq)
+            freq1 = time_to_frequency(y1)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ax1.plot(x, freq1)
+            ax2.cla()
+            ax2.set_xlim(x[-1]-10, x[-1])
+            ax2.plot(x, y2)
+            graph.pyplot(fig)
+        else:
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y)]
+            ax.set_yticks(ticks_positions)
+            ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
+            ax.yaxis.tick_right()
+            ax.set_ylabel('ch1')
+            ax.plot(x, y)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y1)]
+            ax1.set_yticks(ticks_positions)
+            ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
+            ax1.yaxis.tick_right()
+            ax1.set_ylabel('ch2')
+            ax1.plot(x, y1)
+            ax2.cla()
+            ax2.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y2)]
+            ax2.set_yticks(ticks_positions)
+            ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
+            ax2.yaxis.tick_right()
+            ax2.set_ylabel('ch1 - ch2')
+            ax2.plot(x, y2)      
+            graph.pyplot(fig)
     
     time.sleep(wait_time)
 def update_bioz(i, graph, inlet, fig, ax, ax1):
@@ -381,23 +395,34 @@ def update_bioz(i, graph, inlet, fig, ax, ax1):
         del y1[0]
 
     if x[-1] % 1 == 0:
-        ax.cla()
-        ax.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y)]
-        ax.set_yticks(ticks_positions)
-        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
-        ax.yaxis.tick_right()
-        ax.set_ylabel('ch1')
-        ax.plot(x, y)
-        ax1.cla()
-        ax1.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y1)]
-        ax1.set_yticks(ticks_positions)
-        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
-        ax1.yaxis.tick_right()
-        ax1.set_ylabel('ch2')
-        ax1.plot(x, y1)
-        graph.pyplot(fig)
+        if not selected_filter == 'Nofilter':
+            freq = time_to_frequency(y)
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ax.plot(x, freq)
+            freq1 = time_to_frequency(y1)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ax1.plot(x, freq1)
+            graph.pyplot(fig)
+        else:
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y)]
+            ax.set_yticks(ticks_positions)
+            ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
+            ax.yaxis.tick_right()
+            ax.set_ylabel('ch1')
+            ax.plot(x, y)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y1)]
+            ax1.set_yticks(ticks_positions)
+            ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
+            ax1.yaxis.tick_right()
+            ax1.set_ylabel('ch2')
+            ax1.plot(x, y1)
+            graph.pyplot(fig)
     
     time.sleep(wait_time)
 def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
@@ -425,39 +450,58 @@ def update_opt(i, graph, inlet, fig, ax, ax1, ax2, ax3):
         del y3[0]
 
     if x[-1] % 1 == 0:
-        ax.cla()
-        ax.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y)]
-        ax.set_yticks(ticks_positions)
-        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
-        ax.yaxis.tick_right()
-        ax.set_ylabel('ch1')
-        ax.plot(x, y)
-        ax1.cla()
-        ax1.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y1)]
-        ax1.set_yticks(ticks_positions)
-        ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
-        ax1.yaxis.tick_right()
-        ax1.set_ylabel('ch2')
-        ax1.plot(x, y1)
-        ax2.cla()
-        ax2.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y2)]
-        ax2.set_yticks(ticks_positions)
-        ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
-        ax2.yaxis.tick_right()
-        ax2.set_ylabel('ch3')
-        ax2.plot(x, y2)
-        ax3.cla()
-        ax3.set_xlim(x[-1]-10, x[-1])
-        ticks_positions = [np.mean(y3)]
-        ax3.set_yticks(ticks_positions)
-        ax3.set_ylim(np.mean(y3) - scale/2, np.mean(y3) + scale/2)
-        ax3.yaxis.tick_right()
-        ax3.set_ylabel('ch4')
-        ax3.plot(x, y3)
-        graph.pyplot(fig)
+        if not selected_filter == 'Nofilter':
+            freq = time_to_frequency(y)
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ax.plot(x, freq)
+            freq1 = time_to_frequency(y1)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ax1.plot(x, freq1)
+            freq2 = time_to_frequency(y2)
+            ax2.cla()
+            ax2.set_xlim(x[-1]-10, x[-1])
+            ax2.plot(x, freq2)
+            freq3 = time_to_frequency(y3)
+            ax3.cla()
+            ax3.set_xlim(x[-1]-10, x[-1])
+            ax3.plot(x, freq3)
+            graph.pyplot(fig)
+        else:
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y)]
+            ax.set_yticks(ticks_positions)
+            ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
+            ax.yaxis.tick_right()
+            ax.set_ylabel('ch1')
+            ax.plot(x, y)
+            ax1.cla()
+            ax1.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y1)]
+            ax1.set_yticks(ticks_positions)
+            ax1.set_ylim(np.mean(y1) - scale/2, np.mean(y1) + scale/2)
+            ax1.yaxis.tick_right()
+            ax1.set_ylabel('ch2')
+            ax1.plot(x, y1)
+            ax2.cla()
+            ax2.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y2)]
+            ax2.set_yticks(ticks_positions)
+            ax2.set_ylim(np.mean(y2) - scale/2, np.mean(y2) + scale/2)
+            ax2.yaxis.tick_right()
+            ax2.set_ylabel('ch3')
+            ax2.plot(x, y2)
+            ax3.cla()
+            ax3.set_xlim(x[-1]-10, x[-1])
+            ticks_positions = [np.mean(y3)]
+            ax3.set_yticks(ticks_positions)
+            ax3.set_ylim(np.mean(y3) - scale/2, np.mean(y3) + scale/2)
+            ax3.yaxis.tick_right()
+            ax3.set_ylabel('ch4')
+            ax3.plot(x, y3)
+            graph.pyplot(fig)
     
     time.sleep(wait_time)
 def update_temp(i, graph, inlet, fig, ax):
@@ -474,17 +518,24 @@ def update_temp(i, graph, inlet, fig, ax):
         del y[0]
 
     if x[-1] % 1 == 0:
-        ax.cla()
-        ax.set_xlim(x[-1]-10, x[-1])
-        tick_positions = [np.mean(y)]
-        ax.set_yticks(tick_positions)
-        tick_positions = [np.mean(y)]
-        ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
-        ax.set_yticks(tick_positions)
-        ax.yaxis.tick_right()
-        ax.set_ylabel('ch1')
-        ax.plot(x, y)
-        graph.pyplot(fig)
+        if not selected_filter == 'Nofilter':
+            freq = time_to_frequency(y)
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            ax.plot(x, freq)
+            graph.pyplot(fig)
+        else:
+            ax.cla()
+            ax.set_xlim(x[-1]-10, x[-1])
+            tick_positions = [np.mean(y)]
+            ax.set_yticks(tick_positions)
+            tick_positions = [np.mean(y)]
+            ax.set_ylim(np.mean(y) - scale/2, np.mean(y) + scale/2)
+            ax.set_yticks(tick_positions)
+            ax.yaxis.tick_right()
+            ax.set_ylabel('ch1')
+            ax.plot(x, y)
+            graph.pyplot(fig)
     
     time.sleep(wait_time)
 
