@@ -1,4 +1,3 @@
-from scipy import signal
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +18,7 @@ def setup_gui():
     header = st.header('')
     selected_type = st.sidebar.selectbox('Type', ('ACC', 'BIOZ', 'EEG', 'OPT', 'TEMP'))
     scale = st.sidebar.number_input('Scale', min_value=0, max_value=15000, step=1, value=150)
-    selected_filter = st.sidebar.selectbox('filter', ('Nofilter','BP2-30Hz', 'BP2-45Hz','BP5-45Hz','BP15-45Hz','BP7-13Hz'))
+    selected_filter = st.sidebar.selectbox('filter', ('Nofilter','BP_0.5-45Hz', 'BP_1-Hz'))
     ave_ref = st.sidebar.checkbox('Ave Ref')
     norm = st.sidebar.checkbox('Norm.')
     streams = resolve_stream(selected_type)
@@ -107,11 +106,8 @@ def time_to_frequency(time_domain):
 def get_filter(selected_filter):
     strem_filter = {
         'Nofilter': (None,None),
-        'BP2-30Hz': (2,30),
-        'BP2-45Hz': (2,45),
-        'BP5-45Hz': (5,45),
-        'BP15-45Hz': (15,45),
-        'BP7-13Hz': (7,13)
+        'BP_0.5-45Hz': (0.5,45),
+        'BP_1-Hz': (1,1000000)
     }
     return strem_filter.get(selected_filter, None)
 
