@@ -72,16 +72,16 @@ def convert_temp(y):
 
 def normalzie_data(ys):
     # X_norm = (X - X.min()) / (X.max() - X.min())
-    if min(ys) == max(ys):
-        for i in range(len(ys)):
-            ys[i] = 0
+    if max(ys) == min(ys):
+        for y in ys:
+            y = 0
         return ys
-
-    temp = []
-    for y in ys:
-        y = (y - min(ys)) / (max(ys) - min(ys))
-        temp.append(y)
-    return temp
+    else:    
+        temp = []
+        for y in ys:
+            tempy = (float(y) - float(min(ys))) / (float(max(ys)) - float(min(ys)))
+            temp.append(tempy)
+        return temp
 
 def time_to_frequency(time_domain):
     N = len(time_domain)
@@ -251,20 +251,16 @@ def update(i, graph, inlet, fig, ax, ax1):
     time.sleep(wait_time)
 
 def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
+    norms_data = [[]]
     sample, timestamp = inlet.pull_sample()    
     x.append(i*wait_time)
     converty = convert_acc(sample[0])
     converty1 = convert_acc(sample[1])
     converty2 = convert_acc(sample[2])
-    if norm == True:
-        ys = normalzie_data([converty, converty1, converty2])
-    else:
-        ys = [converty, converty1, converty2]
-    
+    ys = [converty, converty1, converty2]
     y.append(ys[0])
     y1.append(ys[1])
     y2.append(ys[2])
-    # print (ys)
 
     if x[-1] > 10:
         del x[0]
@@ -274,7 +270,43 @@ def update_acc(i, graph, inlet, fig, ax, ax1, ax2):
     
     if x[-1] % 1 == 0:
         start = time.time()
-        if not selected_filter == 'Nofilter':
+        if norm :
+            print(y)
+            norms_data.append(normalzie_data(y))
+            print(normalzie_data(y))
+            print(norms_data[0][0])
+            norms_data.append(normalzie_data(y1))
+            norms_data.append(normalzie_data(y2))
+            if not selected_filter == 'Nofilter':
+                freq = time_to_frequency(norms_data[0])
+                ax.cla()
+                ax.set_xlim(x[-1]-10, x[-1])
+                ax.plot(x, freq)
+                freq1 = time_to_frequency(norms_data[1])
+                ax1.cla()
+                ax1.set_xlim(x[-1]-10, x[-1])
+                ax1.plot(x, freq1)
+                freq2 = time_to_frequency(norms_data[2])
+                ax2.cla()
+                ax2.set_xlim(x[-1]-10, x[-1])
+                ax2.plot(x, freq2)
+                graph.pyplot(fig)
+            else:
+                ax.cla()
+                ax.set_xlim(x[-1]-10, x[-1])
+                tick_positions = [np.mean(norms_data[0])]
+                # ax.set_ylim(np.mean(norms_data[0]) - scale/2, np.mean(norms_data[0]) + scale/2)
+                ax.plot(x, norms_data[0])
+                ax1.cla()
+                ax1.set_xlim(x[-1]-10, x[-1])
+                # ax1.set_ylim(np.mean(norms_data[1]) - scale/2, np.mean(norms_data[1]) + scale/2)
+                ax1.plot(x, norms_data[1])
+                ax2.cla()
+                ax2.set_xlim(x[-1]-10, x[-1])
+                # ax2.set_ylim(np.mean(norms_data[2]) - scale/2, np.mean(norms_data[2]) + scale/2)
+                ax2.plot(x, norms_data[2])
+                graph.pyplot(fig)
+        elif not selected_filter == 'Nofilter':
             freq = time_to_frequency(y)
             ax.cla()
             ax.set_xlim(x[-1]-10, x[-1])
